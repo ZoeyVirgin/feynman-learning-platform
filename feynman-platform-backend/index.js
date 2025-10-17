@@ -18,56 +18,19 @@ app.use(express.json());
 //数据库连接
 sequelize.authenticate()
     .then(() => {
-        console.log('MySQL connected successfully!');
+        console.log('数据库连接成功');
         // 同步数据库表（开发环境）
         return sequelize.sync({ alter: true });
     })
     .then(() => {
-        console.log('Database tables synchronized!');
+        console.log('数据库表已同步');
     })
     .catch(err => {
-        console.error('Database connection error:', err);
+        console.error('数据库连接错误:', err);
     });
 
 //api路由
-app.post('/api/register', async (req, res) => {
-    try {
-        const { username, email, password } = req.body;
-
-        // 检查用户是否已存在
-        const existingUser = await User.findOne({
-            where: {
-                [sequelize.Sequelize.Op.or]: [
-                    { email: email },
-                    { username: username }
-                ]
-            }
-        });
-
-        if (existingUser) {
-            return res.status(400).json({
-                msg: existingUser.email === email ? 'Email already exists' : 'Username already exists'
-            });
-        }
-
-        // 加密密码
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // 创建新用户
-        const user = await User.create({
-            username,
-            email,
-            password: hashedPassword
-        });
-
-        res.status(201).json({ msg: 'User registered successfully' });
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
-});
+app.use('/api/users', require('./routes/users'));
 
 //访问 http://localhost:4500/ 触发
 app.get('/', (req, res) => {
