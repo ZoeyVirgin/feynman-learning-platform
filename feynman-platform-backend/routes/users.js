@@ -30,7 +30,7 @@ router.post('/register', async (req, res) => {
             email,
             password: hashedPassword // 存储加密后的密码
         });
-        // 生成 JWT 令牌
+        // 生成 JWT 令牌（自定义令牌）
         const payload = { user: { id: user.id } };
         jwt.sign(
             payload,
