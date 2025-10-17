@@ -1,3 +1,6 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
 module.exports = async function (req, res, next) {
     try {
         // 尝试获取token
@@ -11,14 +14,16 @@ module.exports = async function (req, res, next) {
             return res.status(401).json({ msg: '没有令牌,授权被拒绝' });
         }
         // 验证token
+        console.log('token received =', token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('decoded payload =', decoded);
         const userId = decoded && decoded.user && decoded.user.id;
         if (!userId) {
             return res.status(401).json({ msg: '令牌无效' });
         }
         // 获取用户信息并附加到请求对象上，排除密码字段
         const user = await User.findByPk(userId, {
-            attributes: ['id', 'username', 'email', 'role', 'created_at', 'updated_at', 'is_verified']
+            attributes: ['id', 'username', 'email', 'created_at', 'updated_at',]
         });
         // 用户不存在
         if (!user) {

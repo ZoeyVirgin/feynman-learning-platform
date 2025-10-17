@@ -2,6 +2,7 @@ const express = require('express');//引入express工具包
 const cors = require('cors');//引入cors允许跨域请求
 const bcrypt = require('bcryptjs');//加密密码
 require('dotenv').config();//读取文件环境配置
+console.log('JWT_SECRET =', process.env.JWT_SECRET);
 
 //导入数据库配置和模型
 const sequelize = require('./config/database');
