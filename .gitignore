@@ -120,3 +120,7 @@ Thumbs.db
 04《大前端与AI实战》第四次课程：前端起航与界面搭建.md
 05《大前端与AI实战》第五次课程：前后端联调与状态管理.md
 大前端与AI大纲.md
+
+# 保留 husky 和 commitlint 配置文件（不要忽略）
+!.husky/
+!commitlint.config.js
