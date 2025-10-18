@@ -2,8 +2,12 @@
 import { useState } from 'react';
 import apiClient from '../api/axios'; // 引入apiClient
 import { useNavigate } from 'react-router-dom'; // 用于跳转
+import { useAuth } from '../context/AuthContext'; // 引入useAuth
 
 function LoginPage() {
+
+  const { login } = useAuth(); // 拿到全局登录函数
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -19,21 +23,21 @@ function LoginPage() {
     e.preventDefault();
     setError('');
     try {
-      // 发送登录请求
       const response = await apiClient.post('/users/login', formData);
-      console.log('登录成功，返回数据:', response.data);
+
+      // ✅ 将 token 存到全局状态
+      login(response.data.token);
+
+      console.log('Token 已保存到全局状态:', response.data.token);
 
       // 登录成功后跳转到主页
       navigate('/');
-
-      // 这里我们后续会用 Context 保存 token
-      // 暂时先打印看看
-      console.log('Token:', response.data.token);
     } catch (err) {
       console.error('登录失败:', err.response?.data);
       setError(err.response?.data?.msg || '登录失败，请稍后再试');
     }
   };
+
 
   return (
     <div>

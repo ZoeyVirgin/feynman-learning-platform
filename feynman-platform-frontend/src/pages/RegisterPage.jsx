@@ -1,7 +1,7 @@
-// src/pages/RegisterPage.jsx
 import { useState } from 'react';
-import apiClient from '../api/axios'; // 1. 引入apiClient
-import { useNavigate } from 'react-router-dom'; // 2. 引入useNavigate用于跳转
+import apiClient from '../api/axios';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // 引入useAuth
 
 function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -10,24 +10,29 @@ function RegisterPage() {
     password: '',
   });
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // 3. 获取navigate函数
+  const navigate = useNavigate();
+  const { login } = useAuth(); // 这里可以拿到 login 函数，以备后续直接注册就登录
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => { // 4. 将函数改为async
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // 清空之前的错误信息
+    setError('');
     try {
-      // 5. 使用apiClient发送POST请求
       const response = await apiClient.post('/users/register', formData);
+
       console.log('注册成功:', response.data);
-      // 6. 注册成功后跳转到登录页
+
+      // 可选：直接把 token 存到全局状态，如果后端注册就返回 token
+      // login(response.data.token);
+
+      // 注册完成后跳转到登录页
       navigate('/login');
     } catch (err) {
-      console.error('注册失败:', err.response.data);
-      setError(err.response.data.msg || '注册失败，请稍后再试'); // 7. 显示错误信息
+      console.error('注册失败:', err.response?.data);
+      setError(err.response?.data?.msg || '注册失败，请稍后再试');
     }
   };
 
@@ -35,14 +40,35 @@ function RegisterPage() {
     <div>
       <h1>注册</h1>
       <form onSubmit={handleSubmit}>
-        {/* ... input fields with name attributes */}
-        <input name="username" type="text" value={formData.username} onChange={handleChange} placeholder="用户名" required />
-        <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="邮箱" required />
-        <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="密码" required />
+        <input
+          name="username"
+          type="text"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="用户名"
+          required
+        />
+        <input
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="邮箱"
+          required
+        />
+        <input
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="密码"
+          required
+        />
         <button type="submit">注册</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>} {/* 8. 显示错误提示 */}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 }
+
 export default RegisterPage;
