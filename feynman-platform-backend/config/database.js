@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     dialect: 'mysql',
-    logging: console.log, // 开发环境下显示 SQL 查询日志
+    logging: false, // 关闭SQL日志输出
 });
 
 module.exports = sequelize;
