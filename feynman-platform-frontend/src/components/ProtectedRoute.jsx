@@ -1,17 +1,28 @@
+// src/components/ProtectedRoute.jsx
 import { useAuth } from '../context/AuthContext';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 function ProtectedRoute() {
-    const { token } = useAuth(); // 从全局状态获取 token
+  const { token } = useAuth();
+  const location = useLocation(); // 保存当前路径，用于可能的返回
+  const [redirect, setRedirect] = useState(false);
 
-    // 如果没有 token，重定向到登录页
+  useEffect(() => {
     if (!token) {
-        return <Navigate to="/login" replace />;
-        // replace: 替换历史记录，用户点击后退不会回到受保护页面
+      // 弹出提示
+      alert('请先登录后再访问该页面！');
+      // 延时设置跳转（为了避免 alert 阻塞）
+      setRedirect(true);
     }
+  }, [token]);
 
-    // 如果有 token，正常渲染子路由（通过 Outlet）
-    return <Outlet />;
+  if (redirect && !token) {
+    // 跳转到登录页
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  return <Outlet />;
 }
 
 export default ProtectedRoute;
