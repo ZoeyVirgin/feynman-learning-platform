@@ -3,11 +3,11 @@ import { createContext, useState, useContext, useEffect } from 'react';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [token, setToken] = useState(localStorage.getItem('token'));  // 保存token
     const [user, setUser] = useState(() => {
         try {
             const userData = localStorage.getItem('user');
-            return userData ? JSON.parse(userData) : null;
+            return userData ? JSON.parse(userData) : null; // 保存用户信息
         } catch (error) {
             console.error('Error parsing user data from localStorage:', error);
             localStorage.removeItem('user'); // 清除损坏的数据

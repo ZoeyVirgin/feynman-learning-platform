@@ -14,9 +14,9 @@ module.exports = async function (req, res, next) {
             return res.status(401).json({ msg: '没有令牌,授权被拒绝' });
         }
         // 验证token
-        console.log('token received =', token);
+        // console.log('token received =', token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('decoded payload =', decoded);
+        // console.log('decoded payload =', decoded);
         const userId = decoded && decoded.user && decoded.user.id;
         if (!userId) {
             return res.status(401).json({ msg: '令牌无效' });

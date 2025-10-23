@@ -68,8 +68,9 @@ function DashboardPage() {
                 <div
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
                         gap: '20px',
+                        maxWidth: '100%',
                     }}
                 >
                     {knowledgePoints.map((kp) => (
@@ -103,7 +104,7 @@ function DashboardPage() {
                                 }}
                                 dangerouslySetInnerHTML={{ __html: kp.content }}
                             />
-                            
+
                             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <Link to={`/kp/edit/${kp.id}`}>
                                     <button
