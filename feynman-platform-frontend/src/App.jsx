@@ -3,7 +3,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute'; // 引入
+import ProtectedRoute from './components/ProtectedRoute';
+import KnowledgePointFormPage from './pages/KnowledgePointFormPage';
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
         {/* 受保护的路由 */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/kp/new" element={<KnowledgePointFormPage />} />
+          <Route path="/kp/edit/:id" element={<KnowledgePointFormPage />} />
           {/* 将来其他受保护页面可以放在这里 */}
         </Route>
       </Route>

@@ -27,11 +27,23 @@ function DashboardPage() {
     if (loading) return <p>加载中...</p>;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
+    const handleDelete = async (id) => {
+        if (!window.confirm('你确定要删除这个知识点吗？')) return;
+
+        try {
+            await apiClient.delete(`/knowledge-points/${id}`);
+            setKnowledgePoints(knowledgePoints.filter(kp => kp._id !== id));
+        } catch (err) {
+            console.error('删除失败', err);
+        }
+    };
+
+
     return (
         <div>
             <h1>我的知识点</h1>
             <Link to="/kp/new">
-              <button>+ 新建知识点</button>
+                <button>+ 新建知识点</button>
             </Link>
 
             <div style={{ marginTop: '20px' }}>
@@ -39,12 +51,26 @@ function DashboardPage() {
                     <p>你还没有任何知识点，快去创建一个吧！</p>
                 ) : (
                     <ul>
-                        {knowledgePoints.map((kp) => (
-                            <li key={kp._id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-                                <h2>{kp.title}</h2>
-                                <p>状态: {kp.status}</p>
-                            </li>
-                        ))}
+                        <ul>
+                            {knowledgePoints.map((kp) => (
+                                <li key={kp._id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
+                                    <h2>{kp.title}</h2>
+                                    <div dangerouslySetInnerHTML={{ __html: kp.content }} />
+                                    <div style={{ marginTop: '10px' }}>
+                                        <Link to={`/kp/edit/${kp._id}`}>
+                                            <button>编辑</button>
+                                        </Link>
+                                        <button
+                                            onClick={() => handleDelete(kp._id)}
+                                            style={{ marginLeft: '10px', background: 'red' }}
+                                        >
+                                            删除
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+
                     </ul>
                 )}
             </div>
