@@ -38,7 +38,14 @@ router.post('/register', async (req, res) => {
             { expiresIn: '5h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token });
+                res.json({
+                    token,
+                    user: {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email
+                    }
+                });
             });
     } catch (err) {
         console.error(err);
@@ -60,6 +67,7 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ msg: '无效的凭证' });
         // 生成 JWT 令牌
+        // 生成 JWT 令牌
         const payload = { user: { id: user.id } };
         jwt.sign(
             payload,
@@ -67,7 +75,14 @@ router.post('/login', async (req, res) => {
             { expiresIn: '5h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token });
+                res.json({
+                    token,
+                    user: {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email
+                    }
+                });
             });
     } catch (err) {
         console.error(err);

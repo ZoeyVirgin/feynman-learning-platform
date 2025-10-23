@@ -30,8 +30,8 @@ function RegisterPage() {
 
       // 注册完成后跳转到登录页
       // 注册成功后直接登录
-      login(response.data.token);
-      console.log('Token 已保存到全局状态:', response.data.token);
+      login(response.data.token, response.data.user);
+      console.log('Token 和用户信息已保存到全局状态:', response.data.token, response.data.user);
 
       // 跳转到主页
       navigate('/');

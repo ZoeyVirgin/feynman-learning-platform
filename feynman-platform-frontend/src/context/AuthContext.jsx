@@ -4,19 +4,30 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [token, setToken] = useState(localStorage.getItem('token'));
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        try {
+            const userData = localStorage.getItem('user');
+            return userData ? JSON.parse(userData) : null;
+        } catch (error) {
+            console.error('Error parsing user data from localStorage:', error);
+            localStorage.removeItem('user'); // 清除损坏的数据
+            return null;
+        }
+    });
 
-    const login = (newToken) => {
+    const login = (newToken, userData) => {
         setToken(newToken);
-        localStorage.setItem('token', newToken); // ✅ 把 token 存入 localStorage
+        setUser(userData);
+        localStorage.setItem('token', newToken);
+        localStorage.setItem('user', JSON.stringify(userData));
     };
 
     const logout = () => {
         setToken(null);
         setUser(null);
-        localStorage.removeItem('token'); // ✅ 同时清理 localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
     };
-
 
     const value = { token, user, login, logout };
 

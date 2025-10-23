@@ -25,8 +25,8 @@ function LoginPage() {
     try {
       const response = await apiClient.post('/users/login', formData);
 
-      // ✅ 将 token 存到全局状态
-      login(response.data.token);
+      // ✅ 将 token 和用户信息存到全局状态
+      login(response.data.token, response.data.user);
 
       console.log('Token 已保存到全局状态:', response.data.token);
 
