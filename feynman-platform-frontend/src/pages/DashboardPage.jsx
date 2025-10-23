@@ -32,7 +32,7 @@ function DashboardPage() {
 
         try {
             await apiClient.delete(`/knowledge-points/${id}`);
-            setKnowledgePoints(knowledgePoints.filter(kp => kp._id !== id));
+            setKnowledgePoints(knowledgePoints.filter(kp => kp.id !== id));
         } catch (err) {
             console.error('删除失败', err);
         }
@@ -53,15 +53,15 @@ function DashboardPage() {
                     <ul>
                         <ul>
                             {knowledgePoints.map((kp) => (
-                                <li key={kp._id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
+                                <li key={kp.id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
                                     <h2>{kp.title}</h2>
                                     <div dangerouslySetInnerHTML={{ __html: kp.content }} />
                                     <div style={{ marginTop: '10px' }}>
-                                        <Link to={`/kp/edit/${kp._id}`}>
+                                        <Link to={`/kp/edit/${kp.id}`}>
                                             <button>编辑</button>
                                         </Link>
                                         <button
-                                            onClick={() => handleDelete(kp._id)}
+                                            onClick={() => handleDelete(kp.id)}
                                             style={{ marginLeft: '10px', background: 'red' }}
                                         >
                                             删除
