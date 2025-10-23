@@ -29,7 +29,12 @@ function RegisterPage() {
       // login(response.data.token);
 
       // 注册完成后跳转到登录页
-      navigate('/login');
+      // 注册成功后直接登录
+      login(response.data.token);
+      console.log('Token 已保存到全局状态:', response.data.token);
+
+      // 跳转到主页
+      navigate('/');
     } catch (err) {
       console.error('注册失败:', err.response?.data);
       setError(err.response?.data?.msg || '注册失败，请稍后再试');
