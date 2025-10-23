@@ -11,7 +11,7 @@ const User = sequelize.define('User', {
     username: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        // unique: true 用户名允许重复
     },
     email: {
         type: DataTypes.STRING,
