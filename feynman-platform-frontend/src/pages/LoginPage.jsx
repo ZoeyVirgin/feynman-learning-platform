@@ -34,7 +34,14 @@ function LoginPage() {
       navigate('/');
     } catch (err) {
       console.error('登录失败:', err.response?.data);
-      setError(err.response?.data?.msg || '登录失败，请稍后再试');
+      const errorMsg = err.response?.data?.msg;
+      if (errorMsg === '账号不存在') {
+        setError('该邮箱未注册，请先注册账号');
+      } else if (errorMsg === '密码错误') {
+        setError('密码错误，请重新输入');
+      } else {
+        setError('登录失败，请稍后再试');
+      }
     }
   };
 

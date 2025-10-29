@@ -29,6 +29,26 @@ export function AuthProvider({ children }) {
         localStorage.removeItem('user');
     };
 
+    // 添加token验证函数
+    const verifyToken = async () => {
+        try {
+            const response = await apiClient.get('/users/verify');
+            setUser(response.data.user);
+            return true;
+        } catch (error) {
+            // token无效，清除本地数据
+            logout();
+            return false;
+        }
+    };
+
+    // 在组件初始化时验证token
+    useEffect(() => {
+        if (token) {
+            verifyToken();
+        }
+    }, []);
+
     const value = { token, user, login, logout };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

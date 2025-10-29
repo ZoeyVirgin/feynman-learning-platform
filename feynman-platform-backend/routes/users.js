@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs'); // 引入加密库
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const auth = require('../middleware/auth');
 
 // --- 用户注册 API (已集成密码加密) ---
 // @route   POST /api/users/register
@@ -62,10 +63,10 @@ router.post('/login', async (req, res) => {
         const { email, password } = req.body;
         // 用户是否存在
         const user = await User.findOne({ where: { email } });
-        if (!user) return res.status(400).json({ msg: '无效的凭证' });
+        if (!user) return res.status(400).json({ msg: '账号不存在' });
         // 验证密码
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ msg: '无效的凭证' });
+        if (!isMatch) return res.status(400).json({ msg: '密码错误' });
         // 生成 JWT 令牌
         // 生成 JWT 令牌
         const payload = { user: { id: user.id } };
@@ -87,6 +88,25 @@ router.post('/login', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('服务器错误');
+    }
+});
+
+// --- 验证 Token API ---
+// @route   GET /api/users/verify
+// @desc    验证 Token 是否有效
+// @access  Private
+router.get('/verify', auth, async (req, res) => {
+    try {
+        res.json({ 
+            valid: true, 
+            user: {
+                id: req.user.id,
+                username: req.user.username,
+                email: req.user.email
+            }
+        });
+    } catch (err) {
+        res.status(401).json({ msg: 'Token已过期' });
     }
 });
 
