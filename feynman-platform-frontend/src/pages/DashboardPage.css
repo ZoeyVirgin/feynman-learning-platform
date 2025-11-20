@@ -1,0 +1,121 @@
+/* 页面整体 */
+.dashboard-page {
+    padding: 20px 40px;
+    width: 100%;
+}
+
+
+/* 标题 */
+.dashboard-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 新建按钮区域 */
+.new-kp-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.new-kp-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.new-kp-btn:hover {
+    background-color: #45a049;
+}
+
+/* 没有知识点时的提示 */
+.empty-text {
+    text-align: center;
+    font-size: 16px;
+}
+
+/* 网格布局 — 两列卡片（自动适配） */
+.knowledge-points-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    max-width: 100%;
+}
+
+/* 卡片本体 */
+.knowledge-point-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 卡片 hover 动画（等价于你原来 onMouseEnter/onMouseLeave） */
+.knowledge-point-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* 内容滚动区域 */
+.knowledge-point-content {
+    max-height: 250px;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+
+/* 卡片底部按钮布局 */
+.knowledge-point-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* 编辑按钮 */
+.edit-btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background-color: #2196F3;
+    color: white;
+    margin-right: 8px;
+    transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+    background-color: #1976D2;
+}
+
+/* 删除按钮 */
+.delete-btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background-color: red;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #cc0000;
+}
+
+/* 加载/错误提示 */
+.loading-text {
+    text-align: center;
+    font-size: 16px;
+}
+
+.error-text {
+    text-align: center;
+    font-size: 16px;
+    color: red;
+}

@@ -1,4 +1,5 @@
 // src/pages/DashboardPage.jsx
+import './DashboardPage.css';
 import { useState, useEffect } from 'react';
 import apiClient from '../api/axios';
 import { Link } from 'react-router-dom';
@@ -36,105 +37,36 @@ function DashboardPage() {
         }
     };
 
-    if (loading) return <p style={{ textAlign: 'center' }}>加载中...</p>;
-    if (error) return <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>;
+    if (loading) return <p className="loading-text">加载中...</p>;
+    if (error) return <p className="error-text">{error}</p>;
 
     return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>我的知识点</h1>
-            <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <div className="dashboard-page">
+            <h1>我的知识点</h1>
+            <div className="new-kp-container">
                 <Link to="/kp/new">
-                    <button
-                        style={{
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            border: 'none',
-                            cursor: 'pointer',
-                            backgroundColor: '#4CAF50',
-                            color: 'white',
-                            fontSize: '16px',
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#45a049')}
-                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#4CAF50')}
-                    >
-                        + 新建知识点
-                    </button>
+                    <button className="new-kp-btn">+ 新建知识点</button>
                 </Link>
             </div>
 
             {knowledgePoints.length === 0 ? (
-                <p style={{ textAlign: 'center', fontSize: '16px' }}>你还没有任何知识点，快去创建一个吧！</p>
+                <p className="empty-text">你还没有任何知识点，快去创建一个吧！</p>
             ) : (
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                        gap: '20px',
-                        maxWidth: '100%',
-                    }}
-                >
+                <div className="knowledge-points-grid">
                     {knowledgePoints.map((kp) => (
-                        <div
-                            key={kp.id}
-                            style={{
-                                border: '1px solid #ccc',
-                                borderRadius: '8px',
-                                padding: '16px',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                                transition: 'transform 0.2s, box-shadow 0.2s',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'scale(1.02)';
-                                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'scale(1)';
-                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-                            }}
-                        >
-                            <h2 style={{ marginBottom: '10px' }}>{kp.title}</h2>
+                        <div key={kp.id} className="knowledge-point-card">
+                            <h2>{kp.title}</h2>
                             <div
-                                style={{
-                                    maxHeight: '250px',
-                                    overflow: 'auto',
-                                    marginBottom: '10px',
-                                }}
+                                className="knowledge-point-content"
                                 dangerouslySetInnerHTML={{ __html: kp.content }}
                             />
-
-                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <div className="knowledge-point-actions">
                                 <Link to={`/kp/edit/${kp.id}`}>
-                                    <button
-                                        style={{
-                                            padding: '6px 12px',
-                                            borderRadius: '4px',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            backgroundColor: '#2196F3',
-                                            color: 'white',
-                                            marginRight: '8px',
-                                        }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1976D2')}
-                                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2196F3')}
-                                    >
-                                        编辑
-                                    </button>
+                                    <button className="edit-btn">编辑</button>
                                 </Link>
                                 <button
+                                    className="delete-btn"
                                     onClick={() => handleDelete(kp.id)}
-                                    style={{
-                                        padding: '6px 12px',
-                                        borderRadius: '4px',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        backgroundColor: 'red',
-                                        color: 'white',
-                                    }}
-                                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#cc0000')}
-                                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'red')}
                                 >
                                     删除
                                 </button>
