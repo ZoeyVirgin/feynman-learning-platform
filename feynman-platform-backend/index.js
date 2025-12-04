@@ -33,6 +33,7 @@ sequelize.authenticate()
 //api路由
 app.use('/api/users', require('./routes/users'));
 app.use('/api/knowledge-points', require('./routes/knowledgePoints'));
+app.use('/api/audio', require('./routes/audio'));
 
 //访问 http://localhost:4500/ 触发
 app.get('/', (req, res) => {
