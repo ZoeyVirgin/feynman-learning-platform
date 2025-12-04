@@ -1,0 +1,102 @@
+/* 页面整体 */
+.feynman-record-page {
+    max-width: 900px; /* 限制最大宽度 */
+    margin: 0 auto; /* 居中显示 */
+    padding: 20px;
+    font-family: Arial, sans-serif; /* 设置统一字体 */
+}
+
+/* 标题 */
+.feynman-record-page h1 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 各个区域分隔线 */
+.feynman-record-page hr {
+    border: 1px solid #e0e0e0; /* 灰白色细线 */
+    margin: 20px 0;
+}
+
+/* 复述知识点标题区域 */
+.feynman-record-page .kp-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* 按钮区域 */
+.feynman-record-page .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* 返回按钮 */
+.feynman-record-page .back-btn {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.feynman-record-page .back-btn:hover {
+    background-color: #45a049;
+}
+
+/* 开始/停止录音按钮 */
+.feynman-record-page .record-btn {
+    padding: 8px 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.feynman-record-page .record-btn:hover {
+    background-color: #1976D2;
+}
+
+.feynman-record-page .record-btn:disabled {
+    background-color: #b0bec5;
+    cursor: not-allowed;
+}
+
+/* 录音状态文本 */
+.feynman-record-page .rec-status {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+/* 转录结果 */
+.feynman-record-page .transcription-container {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    min-height: 100px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    font-weight: 400;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    margin-bottom: 20px;
+}
+
+/* 上传转录时的提示 */
+.feynman-record-page .uploading-text {
+    text-align: center;
+    font-size: 16px;
+    color: #ff9800;
+}

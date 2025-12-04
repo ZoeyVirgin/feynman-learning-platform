@@ -1,8 +1,9 @@
 // src/pages/FeynmanRecordPage.jsx
 import { useReactMediaRecorder } from 'react-media-recorder';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import apiClient from '../api/axios';
+import './FeynmanRecordPage.css'; // 引入新的样式文件
 
 function FeynmanRecordPage() {
     const { id } = useParams(); // 知识点ID
@@ -10,8 +11,11 @@ function FeynmanRecordPage() {
     const [transcribedText, setTranscribedText] = useState('');
     const [isUploading, setIsUploading] = useState(false);
 
-    // 使用Hook
+    // 使用 hook
     const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({ audio: true });
+
+    // 获取返回的功能
+    const navigate = useNavigate(); // 用于导航
 
     useEffect(() => {
         // 获取知识点标题用于显示
@@ -61,20 +65,36 @@ function FeynmanRecordPage() {
     });
 
     return (
-        <div>
+        <div className="feynman-record-page">
             <h1>复述知识点: {kpTitle}</h1>
-            <p>录音状态: {recStatus}</p>
 
-            <button onClick={recStart} disabled={recStatus === 'recording'}>开始录音</button>
-            <button onClick={recStop} disabled={recStatus !== 'recording'}>停止录音</button>
+            {/* 返回按钮 */}
+            <button onClick={() => navigate(-1)} className="back-btn">
+                返回
+            </button>
+
+            <hr />
+
+            {/* 按钮区域 */}
+            <div className="action-buttons">
+                <button onClick={recStart} disabled={recStatus === 'recording'} className="record-btn">
+                    开始录音
+                </button>
+                <button onClick={recStop} disabled={recStatus !== 'recording'} className="record-btn">
+                    停止录音
+                </button>
+            </div>
+
+            {/* 录音状态 */}
+            <p className="rec-status">录音状态: {recStatus}</p>
 
             {recUrl && <audio src={recUrl} controls />}
 
             <hr />
 
             <h2>AI 转录结果:</h2>
-            {isUploading && <p>正在上传并转录，请稍候...</p>}
-            <div style={{ border: '1px solid #ccc', padding: '1rem', minHeight: '100px' }}>
+            {isUploading && <p className="uploading-text">正在上传并转录，请稍候...</p>}
+            <div className="transcription-container">
                 {transcribedText}
             </div>
         </div>
