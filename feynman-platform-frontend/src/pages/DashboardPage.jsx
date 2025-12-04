@@ -217,13 +217,13 @@ function DashboardPage() {
                             </div>
                             <div className="knowledge-point-actions">
                                 <Link to={`/kp/edit/${kp.id ?? kp._id}`}>
-                                    <button className="edit-btn">编辑</button>
+                                    <button className="action-btn edit-btn">编辑</button>
                                 </Link>
                                 <Link to={`/feynman/${kp.id ?? kp._id}`}>
-                                    <button className="feynman-btn">开始复述</button>
+                                    <button className="action-btn feynman-btn">开始复述</button>
                                 </Link>
                                 <button
-                                    className="delete-btn"
+                                    className="action-btn delete-btn"
                                     onClick={() => handleDelete(kp.id ?? kp._id)}
                                 >
                                     删除

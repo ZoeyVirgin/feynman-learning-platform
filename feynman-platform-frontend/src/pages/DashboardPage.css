@@ -4,7 +4,6 @@
     width: 100%;
 }
 
-
 /* 标题 */
 .dashboard-page h1 {
     text-align: center;
@@ -58,7 +57,7 @@
     justify-content: space-between;
 }
 
-/* 卡片 hover 动画（等价于你原来 onMouseEnter/onMouseLeave） */
+/* 卡片 hover 动画 */
 .knowledge-point-card:hover {
     transform: scale(1.02);
     box-shadow: 0 4px 16px rgba(0,0,0,0.2);
@@ -74,38 +73,51 @@
 /* 卡片底部按钮布局 */
 .knowledge-point-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end; /* 靠右对齐按钮 */
+    gap: 6px; /* 按钮间隔减小一倍 */
+    align-items: center; /* 垂直居中 */
+    margin-top: 10px; /* 微调距离卡片底部 */
+}
+
+/* 通用按钮样式 */
+.action-btn {
+    padding: 6px 12px; /* 统一按钮的内边距 */
+    border-radius: 6px; /* 圆角 */
+    border: none; /* 去掉边框 */
+    cursor: pointer; /* 鼠标样式为指针 */
+    font-size: 16px; /* 字体大小 */
+    margin-right: 6px; /* 按钮之间的间距（减小为原来的 1/2） */
+    transition: background-color 0.2s; /* 鼠标悬浮时背景色过渡效果 */
 }
 
 /* 编辑按钮 */
 .edit-btn {
-    padding: 6px 12px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    background-color: #2196F3;
-    color: white;
-    margin-right: 8px;
-    transition: background-color 0.2s;
+    background-color: #2196F3; /* 蓝色 */
+    color: white; /* 白色文字 */
 }
 
 .edit-btn:hover {
-    background-color: #1976D2;
+    background-color: #1976D2; /* 深蓝色 */
+}
+
+/* 开始复述按钮 */
+.feynman-btn {
+    background-color: #4CAF50; /* 绿色 */
+    color: white; /* 白色文字 */
+}
+
+.feynman-btn:hover {
+    background-color: #45a049; /* 深绿色 */
 }
 
 /* 删除按钮 */
 .delete-btn {
-    padding: 6px 12px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    background-color: red;
-    color: white;
-    transition: background-color 0.2s;
+    background-color: red; /* 红色 */
+    color: white; /* 白色文字 */
 }
 
 .delete-btn:hover {
-    background-color: #cc0000;
+    background-color: #cc0000; /* 深红色 */
 }
 
 /* 加载/错误提示 */
@@ -118,17 +130,4 @@
     text-align: center;
     font-size: 16px;
     color: red;
-}
-
-.knowledge-point-actions a {
-    display: inline-block;
-}
-
-.action-btn {
-    padding: 6px 12px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 1;
 }
