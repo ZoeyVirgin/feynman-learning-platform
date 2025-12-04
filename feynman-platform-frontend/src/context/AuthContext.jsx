@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import apiClient from '../api/axios';
 
 const AuthContext = createContext(null);
 
@@ -37,6 +38,7 @@ export function AuthProvider({ children }) {
             return true;
         } catch (error) {
             // token无效，清除本地数据
+            console.warn('Token 验证失败:', error?.response?.data?.msg || error.message);
             logout();
             return false;
         }
@@ -47,7 +49,8 @@ export function AuthProvider({ children }) {
         if (token) {
             verifyToken();
         }
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [token]);
 
     const value = { token, user, login, logout };
 
