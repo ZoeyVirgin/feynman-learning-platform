@@ -5,6 +5,8 @@ import DashboardPage from './pages/DashboardPage';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import KnowledgePointFormPage from './pages/KnowledgePointFormPage';
+import FeynmanRecordPage from './pages/FeynmanRecordPage';
+
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/kp/new" element={<KnowledgePointFormPage />} />
           <Route path="/kp/edit/:id" element={<KnowledgePointFormPage />} />
+          <Route path="/feynman/:id" element={<FeynmanRecordPage />} />
           {/* 将来其他受保护页面可以放在这里 */}
         </Route>
       </Route>
