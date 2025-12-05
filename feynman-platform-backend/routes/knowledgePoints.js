@@ -54,7 +54,13 @@ router.put('/:id', auth, async (req, res) => {
         if (kp.userId !== req.user.id) return res.status(401).json({ msg: '未授权' });
 
         const { title, content, status, reviewList } = req.body;
-        await kp.update({ title, content, status, reviewList });
+        const updateData = {};
+        if (typeof title !== 'undefined') updateData.title = title;
+        if (typeof content !== 'undefined') updateData.content = content;
+        if (typeof status !== 'undefined') updateData.status = status;
+        if (typeof reviewList !== 'undefined') updateData.reviewList = reviewList;
+
+        await kp.update(updateData);
         res.json(kp);
     } catch (err) {
         console.error(err);

@@ -54,7 +54,7 @@ form {
   gap: 1rem;
 }
 
-input {
+input, textarea {
   padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -73,4 +73,40 @@ button {
 
 button:hover {
   background-color: #005fcc;
+}
+
+/* 通用返回按钮（供 QuizPage 使用） */
+.back-btn {
+  background-color: #888;
+}
+.back-btn:hover {
+  background-color: #6d6d6d;
+}
+
+/* 测评页不同难度/题型按钮配色 */
+.btn-basic {
+  background-color: #2ecc71; /* 绿：基础 */
+}
+.btn-basic:hover { background-color: #27ae60; }
+
+.btn-medium {
+  background-color: #f1c40f; /* 黄：中等 */
+  color: #333;
+}
+.btn-medium:hover { background-color: #d4ac0d; }
+
+.btn-hard {
+  background-color: #e74c3c; /* 红：困难 */
+}
+.btn-hard:hover { background-color: #c0392b; }
+
+.btn-short {
+  background-color: #8e44ad; /* 紫：简答 */
+}
+.btn-short:hover { background-color: #7d3c98; }
+
+/* 禁用态 */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

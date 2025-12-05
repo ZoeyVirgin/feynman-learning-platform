@@ -34,6 +34,7 @@ sequelize.authenticate()
 app.use('/api/users', require('./routes/users'));
 app.use('/api/knowledge-points', require('./routes/knowledgePoints'));
 app.use('/api/audio', require('./routes/audio'));
+app.use('/api/ai', require('./routes/ai'));
 
 //访问 http://localhost:4500/ 触发
 app.get('/', (req, res) => {

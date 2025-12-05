@@ -222,6 +222,9 @@ function DashboardPage() {
                                 <Link to={`/feynman/${kp.id ?? kp._id}`}>
                                     <button className="feynman-btn">开始复述</button>
                                 </Link>
+                                <Link to={`/quiz/${kp.id ?? kp._id}`}>
+                                    <button className="edit-btn">开始测评</button>
+                                </Link>
                                 <button
                                     className="delete-btn"
                                     onClick={() => handleDelete(kp.id ?? kp._id)}
