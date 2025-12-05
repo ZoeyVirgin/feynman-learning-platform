@@ -1,9 +1,17 @@
 /* 页面整体 */
 .feynman-record-page {
-    max-width: 900px; /* 限制最大宽度 */
+    /* 固定较宽的版心，避免随内容阶段变化出现宽度抖动 */
+    width: min(1100px, calc(100vw - 64px));
     margin: 0 auto; /* 居中显示 */
     padding: 20px;
     font-family: Arial, sans-serif; /* 设置统一字体 */
+}
+
+@media (max-width: 768px) {
+    .feynman-record-page {
+        width: calc(100vw - 32px); /* 移动端留出边距 */
+        padding: 16px;
+    }
 }
 
 /* 标题 */
