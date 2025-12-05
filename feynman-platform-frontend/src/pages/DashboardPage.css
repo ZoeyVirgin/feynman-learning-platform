@@ -171,6 +171,14 @@
     align-items: center;
     margin-top: 10px;
 }
+/* 批量模式下禁用卡片内操作按钮（置灰且不可点击） */
+.knowledge-point-actions.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+.knowledge-point-actions.disabled .action-btn {
+    cursor: not-allowed;
+}
 
 /* 通用按钮样式（页面内操作按钮） */
 .action-btn {

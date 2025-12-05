@@ -304,18 +304,19 @@ function DashboardPage() {
                                 <div className="knowledge-point-content markdown-content">
                                     {renderContent(kp)}
                                 </div>
-                                <div className="knowledge-point-actions" onClick={(e) => e.stopPropagation()}>
-                                    <Link to={`/kp/edit/${id}`}>
-                                        <button className="edit-btn action-btn">编辑</button>
+                                <div className={`knowledge-point-actions ${bulkMode ? 'disabled' : ''}`} onClick={(e) => { if (!bulkMode) e.stopPropagation(); }}>
+                                    <Link to={`/kp/edit/${id}`} aria-disabled={bulkMode} tabIndex={bulkMode ? -1 : undefined} onClick={bulkMode ? (e) => e.preventDefault() : undefined}>
+                                        <button className="edit-btn action-btn" disabled={bulkMode}>编辑</button>
                                     </Link>
-                                    <Link to={`/feynman/${id}`}>
-                                        <button className="feynman-btn action-btn">开始复述</button>
+                                    <Link to={`/feynman/${id}`} aria-disabled={bulkMode} tabIndex={bulkMode ? -1 : undefined} onClick={bulkMode ? (e) => e.preventDefault() : undefined}>
+                                        <button className="feynman-btn action-btn" disabled={bulkMode}>开始复述</button>
                                     </Link>
-                                    <Link to={`/quiz/${id}`}>
-                                        <button className="edit-btn action-btn">开始测评</button>
+                                    <Link to={`/quiz/${id}`} aria-disabled={bulkMode} tabIndex={bulkMode ? -1 : undefined} onClick={bulkMode ? (e) => e.preventDefault() : undefined}>
+                                        <button className="edit-btn action-btn" disabled={bulkMode}>开始测评</button>
                                     </Link>
                                     <button
                                         className="delete-btn action-btn"
+                                        disabled={bulkMode}
                                         onClick={() => handleDelete(id)}
                                     >
                                         删除
