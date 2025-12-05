@@ -7,13 +7,22 @@
 /* 标题 */
 .dashboard-page h1 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
+}
+
+/* 顶部操作区：新建 + 批量工具条 */
+.top-actions {
+    display: flex;
+    justify-content: flex-start; /* 左对齐，整合到一块显示 */
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap; /* 响应式换行 */
+    margin-bottom: 16px; /* 比之前更靠上，不会与卡片贴在一起 */
 }
 
 /* 新建按钮区域 */
 .new-kp-container {
-    text-align: center;
-    margin-bottom: 30px;
+    text-align: left;
 }
 
 .new-kp-btn {
@@ -31,6 +40,73 @@
     background-color: #45a049;
 }
 
+/* 批量工具条 */
+.bulk-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bulk-toggle-btn {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    background: #fff;
+    color: #343a40; /* 防止被全局 button 设为白字 */
+    cursor: pointer;
+}
+
+.bulk-toggle-btn:hover {
+    background: #f8f9fa; /* 避免全局 button:hover 把背景变蓝 */
+    color: #212529;
+}
+
+.bulk-toggle-btn.active {
+    border-color: #4c6ef5;
+    background: #edf2ff;
+    color: #364fc7;
+}
+
+.bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bulk-selected-count {
+    font-size: 14px;
+    color: #495057;
+}
+
+.bulk-action-btn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.bulk-action-btn.primary {
+    background: #228be6;
+    color: #fff;
+}
+.bulk-action-btn.primary:hover {
+    background: #1c7ed6; /* 明确 hover，避免被全局覆盖 */
+}
+
+.bulk-action-btn.danger {
+    background: #fa5252;
+    color: #fff;
+}
+.bulk-action-btn.danger:hover {
+    background: #f03e3e; /* 明确 hover，避免被全局覆盖 */
+}
+
+.bulk-action-btn:disabled,
+.bulk-toggle-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* 没有知识点时的提示 */
 .empty-text {
     text-align: center;
@@ -41,26 +117,43 @@
 .knowledge-points-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 30px;
+    gap: 24px; /* 略缩小间隔，让整体更紧凑 */
     max-width: 100%;
 }
 
 /* 卡片本体 */
 .knowledge-point-card {
+    position: relative; /* 便于在左上角放复选框 */
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
+/* 选中高亮（红色系） */
+.knowledge-point-card.selected {
+    border-color: #ff6b6b;
+    background-color: #fff5f5;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+/* 左上角复选框（仅批量模式渲染） */
+.select-checkbox {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 18px;
+    height: 18px;
+}
+
 /* 卡片 hover 动画 */
 .knowledge-point-card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
 }
 
 /* 内容滚动区域 */
@@ -73,51 +166,50 @@
 /* 卡片底部按钮布局 */
 .knowledge-point-actions {
     display: flex;
-    justify-content: flex-end; /* 靠右对齐按钮 */
-    gap: 6px; /* 按钮间隔减小一倍 */
-    align-items: center; /* 垂直居中 */
-    margin-top: 10px; /* 微调距离卡片底部 */
+    justify-content: flex-end;
+    gap: 6px;
+    align-items: center;
+    margin-top: 10px;
 }
 
-/* 通用按钮样式 */
+/* 通用按钮样式（页面内操作按钮） */
 .action-btn {
-    padding: 6px 12px; /* 统一按钮的内边距 */
-    border-radius: 6px; /* 圆角 */
-    border: none; /* 去掉边框 */
-    cursor: pointer; /* 鼠标样式为指针 */
-    font-size: 16px; /* 字体大小 */
-    margin-right: 6px; /* 按钮之间的间距（减小为原来的 1/2） */
-    transition: background-color 0.2s; /* 鼠标悬浮时背景色过渡效果 */
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
 }
 
 /* 编辑按钮 */
 .edit-btn {
-    background-color: #2196F3; /* 蓝色 */
-    color: white; /* 白色文字 */
+    background-color: #2196F3;
+    color: white;
 }
 
 .edit-btn:hover {
-    background-color: #1976D2; /* 深蓝色 */
+    background-color: #1976D2;
 }
 
 /* 开始复述按钮 */
 .feynman-btn {
-    background-color: #4CAF50; /* 绿色 */
-    color: white; /* 白色文字 */
+    background-color: #4CAF50;
+    color: white;
 }
 
 .feynman-btn:hover {
-    background-color: #45a049; /* 深绿色 */
+    background-color: #45a049;
 }
 
 /* 删除按钮 */
 .delete-btn {
-    background-color: red; /* 红色 */
-    color: white; /* 白色文字 */
+    background-color: red;
+    color: white;
 }
 
 .delete-btn:hover {
-    background-color: #cc0000; /* 深红色 */
+    background-color: #cc0000;
 }
 
 /* 加载/错误提示 */

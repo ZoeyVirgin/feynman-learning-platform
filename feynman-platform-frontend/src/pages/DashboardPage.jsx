@@ -2,7 +2,7 @@
 import './DashboardPage.css';
 import 'katex/dist/katex.min.css';
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -85,7 +85,8 @@ const cleanHtmlToMarkdown = (html) => {
     decoded = decoded
         .replace(/<p[^>]*>/g, '\n')
         .replace(/<\/p>/g, '\n')
-        .replace(/<br\s*\/?>/g, '\n')
+        .replace(/<br\s*\/?>(?=\n|\r|$)/g, '\n')
+        .replace(/<br\s*\/?>(?!\n)/g, '\n')
         .replace(/<\/?(span|div)[^>]*>/g, '')
         .replace(/<\/?strong>/g, '**')
         .replace(/<\/?em>/g, '_')
@@ -115,6 +116,13 @@ function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // 批量模式与选中集合
+    const [bulkMode, setBulkMode] = useState(false);
+    const [selectedIds, setSelectedIds] = useState(new Set());
+    const navigate = useNavigate();
+
+    const getId = (kp) => kp?.id ?? kp?._id;
+
     useEffect(() => {
         const fetchKnowledgePoints = async () => {
             try {
@@ -137,10 +145,39 @@ function DashboardPage() {
 
         try {
             await apiClient.delete(`/knowledge-points/${id}`);
-            setKnowledgePoints(prev => prev.filter(kp => (kp.id ?? kp._id) !== id));
+            setKnowledgePoints(prev => prev.filter(kp => getId(kp) !== id));
         } catch (err) {
             console.error('删除失败', err);
         }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.size === 0) return;
+        if (!window.confirm(`确定批量删除选中的 ${selectedIds.size} 个知识点吗？`)) return;
+        try {
+            await Promise.allSettled(
+                Array.from(selectedIds).map(id => apiClient.delete(`/knowledge-points/${id}`))
+            );
+            setKnowledgePoints(prev => prev.filter(kp => !selectedIds.has(getId(kp))));
+            setSelectedIds(new Set());
+            setBulkMode(false);
+        } catch (err) {
+            console.error('批量删除失败', err);
+        }
+    };
+
+    const handleBulkQuiz = () => {
+        if (selectedIds.size === 0) return;
+        const idsParam = Array.from(selectedIds).join(',');
+        navigate(`/quiz/batch?ids=${encodeURIComponent(idsParam)}`);
+    };
+
+    const toggleSelect = (id) => {
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id); else next.add(id);
+            return next;
+        });
     };
 
     const markdownComponents = useMemo(() => ({
@@ -166,7 +203,7 @@ function DashboardPage() {
 
         if (import.meta.env.DEV) {
             console.debug('渲染知识点：', {
-                id: kp?.id ?? kp?._id ?? '无ID',
+                id: getId(kp) ?? '无ID',
                 title: kp?.title,
                 preview: cleaned.slice(0, 80),
                 detectedHtml: shouldRenderAsHtml,
@@ -199,41 +236,94 @@ function DashboardPage() {
     return (
         <div className="dashboard-page">
             <h1>我的知识点</h1>
-            <div className="new-kp-container">
+
+            <div className="top-actions">
                 <Link to="/kp/new">
                     <button className="new-kp-btn">+ 新建知识点</button>
                 </Link>
+
+                <button
+                    className={`bulk-toggle-btn ${bulkMode ? 'active' : ''}`}
+                    onClick={() => {
+                        setBulkMode((v) => {
+                            const next = !v;
+                            if (!next) setSelectedIds(new Set());
+                            return next;
+                        });
+                    }}
+                >
+                    {bulkMode ? '退出批量' : '批量处理'}
+                </button>
+
+                {bulkMode && (
+                    <div className="bulk-actions">
+                        <span className="bulk-selected-count">已选 {selectedIds.size} 项</span>
+                        <button
+                            className="bulk-action-btn danger"
+                            disabled={selectedIds.size === 0}
+                            onClick={handleBulkDelete}
+                        >
+                            批量删除
+                        </button>
+                        <button
+                            className="bulk-action-btn primary"
+                            disabled={selectedIds.size === 0}
+                            onClick={handleBulkQuiz}
+                        >
+                            批量出题
+                        </button>
+                    </div>
+                )}
             </div>
 
             {knowledgePoints.length === 0 ? (
                 <p className="empty-text">你还没有任何知识点，快去创建一个吧！</p>
             ) : (
                 <div className="knowledge-points-grid">
-                    {knowledgePoints.map((kp) => (
-                        <div key={kp.id ?? kp._id} className="knowledge-point-card">
-                            <h2>{kp.title}</h2>
-                            <div className="knowledge-point-content markdown-content">
-                                {renderContent(kp)}
+                    {knowledgePoints.map((kp) => {
+                        const id = getId(kp);
+                        const selected = selectedIds.has(id);
+                        return (
+                            <div
+                                key={id}
+                                className={`knowledge-point-card ${selected ? 'selected' : ''}`}
+                                onClick={() => {
+                                    if (bulkMode) toggleSelect(id);
+                                }}
+                            >
+                                {bulkMode && (
+                                    <input
+                                        type="checkbox"
+                                        className="select-checkbox"
+                                        checked={selected}
+                                        onChange={() => toggleSelect(id)}
+                                        onClick={(e) => e.stopPropagation()}
+                                    />
+                                )}
+                                <h2>{kp.title}</h2>
+                                <div className="knowledge-point-content markdown-content">
+                                    {renderContent(kp)}
+                                </div>
+                                <div className="knowledge-point-actions" onClick={(e) => e.stopPropagation()}>
+                                    <Link to={`/kp/edit/${id}`}>
+                                        <button className="edit-btn action-btn">编辑</button>
+                                    </Link>
+                                    <Link to={`/feynman/${id}`}>
+                                        <button className="feynman-btn action-btn">开始复述</button>
+                                    </Link>
+                                    <Link to={`/quiz/${id}`}>
+                                        <button className="edit-btn action-btn">开始测评</button>
+                                    </Link>
+                                    <button
+                                        className="delete-btn action-btn"
+                                        onClick={() => handleDelete(id)}
+                                    >
+                                        删除
+                                    </button>
+                                </div>
                             </div>
-                            <div className="knowledge-point-actions">
-                                <Link to={`/kp/edit/${kp.id ?? kp._id}`}>
-                                    <button className="edit-btn">编辑</button>
-                                </Link>
-                                <Link to={`/feynman/${kp.id ?? kp._id}`}>
-                                    <button className="feynman-btn">开始复述</button>
-                                </Link>
-                                <Link to={`/quiz/${kp.id ?? kp._id}`}>
-                                    <button className="edit-btn">开始测评</button>
-                                </Link>
-                                <button
-                                    className="delete-btn"
-                                    onClick={() => handleDelete(kp.id ?? kp._id)}
-                                >
-                                    删除
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>
