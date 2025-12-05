@@ -1,4 +1,4 @@
-// controllers/aiController.js
+// controllers/BaiduAiController.js
 const { spawn } = require('child_process');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
 const AipSpeechClient = require('baidu-aip-sdk').speech;
@@ -96,3 +96,4 @@ exports.transcribeAudio = async (req, res) => {
         res.status(500).send('Server error during transcription.');
     }
 };
+

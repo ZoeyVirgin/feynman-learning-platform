@@ -11,7 +11,11 @@ function FeynmanRecordPage() {
     const [transcribedText, setTranscribedText] = useState('');
     const [isUploading, setIsUploading] = useState(false);
 
-    // 使用 hook
+    // 新增：AI 评价相关状态
+    const [aiFeedback, setAiFeedback] = useState(null);
+    const [isEvaluating, setIsEvaluating] = useState(false);
+
+    // 使用 hook（保留，但不使用）
     const { status, startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({ audio: true });
 
     // 获取返回的功能
@@ -28,6 +32,27 @@ function FeynmanRecordPage() {
 
     const handleStopRecording = async () => {
         stopRecording(); // 这个库的stopRecording是异步的，但我们可以在onStop回调中处理
+    };
+
+    // 新增：调用后端进行 AI 润色与评价
+    const getAiEvaluation = async (transcribed) => {
+        setIsEvaluating(true);
+        setAiFeedback(null);
+        try {
+            // 获取原始知识点内容
+            const kpResponse = await apiClient.get(`/knowledge-points/${id}`);
+            const originalContent = kpResponse.data.content;
+
+            const feedbackResponse = await apiClient.post('/audio/evaluate', {
+                originalContent,
+                transcribedText: transcribed,
+            });
+            setAiFeedback(feedbackResponse.data);
+        } catch (error) {
+            console.error('获取AI评价失败', error);
+        } finally {
+            setIsEvaluating(false);
+        }
     };
 
     const uploadAudio = async (blobUrl) => {
@@ -47,7 +72,13 @@ function FeynmanRecordPage() {
                 },
             });
 
-            setTranscribedText(response.data.result);
+            if (response?.data?.result) {
+                setTranscribedText(response.data.result);
+                // 成功后触发 AI 评价
+                getAiEvaluation(response.data.result);
+            } else {
+                setTranscribedText('转录失败，请重试。');
+            }
         } catch (error) {
             console.error('上传或转录失败', error);
             setTranscribedText('转录失败，请重试。');
@@ -97,6 +128,38 @@ function FeynmanRecordPage() {
             <div className="transcription-container">
                 {transcribedText}
             </div>
+
+            <hr />
+
+            <h2>AI 教练反馈:</h2>
+            {isEvaluating && <p>AI教练正在批阅您的答卷...</p>}
+            {aiFeedback && (
+                <div className="ai-feedback" style={{ display: 'flex', gap: '2rem' }}>
+                    <div style={{ flex: 1 }}>
+                        <h3>AI 润色后的文本</h3>
+                        <p style={{ background: '#eef', padding: '1rem' }}>{aiFeedback.polishedText}</p>
+
+                        <h3>综合评价</h3>
+                        <p>{aiFeedback.evaluation}</p>
+
+                        <h3>优点 👍</h3>
+                        <ul>
+                            {aiFeedback.strengths?.map((item, index) => <li key={index}>{item}</li>)}
+                        </ul>
+
+                        <h3>待改进 👇</h3>
+                        <ul>
+                            {aiFeedback.weaknesses?.map((item, index) => <li key={index}>{item}</li>)}
+                        </ul>
+                    </div>
+                    <div style={{ flex: '0 0 150px', textAlign: 'center' }}>
+                        <h3>综合得分</h3>
+                        <div style={{ fontSize: '3rem', fontWeight: 'bold', color: (aiFeedback.score || 0) > 80 ? 'green' : 'orange' }}>
+                            {aiFeedback.score}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
