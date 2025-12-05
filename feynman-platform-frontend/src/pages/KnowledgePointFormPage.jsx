@@ -44,32 +44,42 @@ function KnowledgePointFormPage() {
     };
 
     return (
-        <div>
-            <h1>{isEditing ? '编辑知识点' : '新建知识点'}</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>标题:</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        style={{ width: '100%', padding: '8px' }}
-                        required
-                    />
+        <div style={{ width: '100%' }}>
+            {/* 居中容器，保持与原表单同样的居中效果与宽度 */}
+            <div style={{ maxWidth: 400, width: '100%', margin: '0 auto' }}>
+                {/* 顶部仅保留一个返回按钮 */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                    <button className="back-btn" onClick={() => navigate(-1)}>返回</button>
+                    <h1 style={{ margin: 0 }}>{isEditing ? '编辑知识点' : '新建知识点'}</h1>
                 </div>
-                <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                    <label>内容:</label>
-                    <ReactQuill
-                        theme="snow"
-                        value={content}
-                        onChange={setContent}
-                        style={{ height: '300px' }}
-                    />
-                </div>
-                <button type="submit" style={{ marginTop: '1rem' }}>
-                    {isEditing ? '更新' : '创建'}
-                </button>
-            </form>
+
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label>标题:</label>
+                        <input
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                            required
+                        />
+                    </div>
+                    <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                        <label>内容:</label>
+                        <div>
+                            <ReactQuill
+                                theme="snow"
+                                value={content}
+                                onChange={setContent}
+                                style={{ height: '300px', width: '100%' }}
+                            />
+                        </div>
+                    </div>
+                    <button type="submit" style={{ marginTop: '1rem' }}>
+                        {isEditing ? '更新' : '创建'}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
