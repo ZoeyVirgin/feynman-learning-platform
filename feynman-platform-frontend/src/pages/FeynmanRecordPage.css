@@ -44,21 +44,6 @@
     margin-bottom: 20px;
 }
 
-/* 返回按钮 */
-.feynman-record-page .back-btn {
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s;
-}
-
-.feynman-record-page .back-btn:hover {
-    background-color: #45a049;
-}
 
 /* 开始/停止录音按钮 */
 .feynman-record-page .record-btn {
