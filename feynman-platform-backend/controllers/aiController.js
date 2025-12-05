@@ -1,4 +1,4 @@
-// controllers/baiduAiController.js
+// controllers/aiController.js
 const { spawn } = require('child_process');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
 const AipSpeechClient = require('baidu-aip-sdk').speech;

@@ -4,7 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const auth = require('../middleware/auth');
 // 引入百度AI的控制器（我们稍后创建）
-const { transcribeAudio } = require('../controllers/baiduAiController');
+const { transcribeAudio } = require('../controllers/aiController');
 
 // 配置multer
 // 我们这里使用内存存储，因为只是临时中转给百度AI，不需要存到服务器硬盘
