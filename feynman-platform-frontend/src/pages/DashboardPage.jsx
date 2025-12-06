@@ -127,6 +127,32 @@ function DashboardPage() {
 
     const getId = (kp) => kp?.id ?? kp?._id;
 
+    const getPreviewIndex = () => {
+        if (!previewKp) return -1;
+        const id = getId(previewKp);
+        return knowledgePoints.findIndex((k) => getId(k) === id);
+    };
+
+    const hasPrev = () => {
+        const idx = getPreviewIndex();
+        return idx > 0;
+    };
+
+    const hasNext = () => {
+        const idx = getPreviewIndex();
+        return idx >= 0 && idx < knowledgePoints.length - 1;
+    };
+
+    const goPrev = () => {
+        const idx = getPreviewIndex();
+        if (idx > 0) setPreviewKp(knowledgePoints[idx - 1]);
+    };
+
+    const goNext = () => {
+        const idx = getPreviewIndex();
+        if (idx >= 0 && idx < knowledgePoints.length - 1) setPreviewKp(knowledgePoints[idx + 1]);
+    };
+
     useEffect(() => {
         const fetchKnowledgePoints = async () => {
             try {
@@ -148,19 +174,36 @@ function DashboardPage() {
         if (!previewKp) return;
         const onKeyDown = (e) => {
             if (e.key === 'Escape') setPreviewKp(null);
+            if (e.key === 'ArrowLeft') goPrev();
+            if (e.key === 'ArrowRight') goNext();
         };
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
-    }, [previewKp]);
+    }, [previewKp, knowledgePoints]);
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('你确定要删除这个知识点吗？')) return;
+    const handleDelete = async (id, options = {}) => {
+        if (!window.confirm('你确定要删除这个知识点吗？')) return false;
+        const { fromModal = false } = options;
 
         try {
             await apiClient.delete(`/knowledge-points/${id}`);
-            setKnowledgePoints(prev => prev.filter(kp => getId(kp) !== id));
+            setKnowledgePoints((prev) => {
+                const currentIndex = prev.findIndex((k) => getId(k) === id);
+                const nextList = prev.filter((kp) => getId(kp) !== id);
+                if (fromModal) {
+                    if (nextList.length === 0) {
+                        setPreviewKp(null);
+                    } else {
+                        const nextIndex = Math.min(currentIndex, nextList.length - 1);
+                        setPreviewKp(nextList[nextIndex]);
+                    }
+                }
+                return nextList;
+            });
+            return true;
         } catch (err) {
             console.error('删除失败', err);
+            return false;
         }
     };
 
@@ -347,13 +390,25 @@ function DashboardPage() {
             {previewKp && (
                 <div className="modal-overlay" onClick={() => setPreviewKp(null)}>
                     <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+                        <button className="modal-side-btn prev" disabled={!hasPrev()} onClick={(e) => { e.stopPropagation(); goPrev(); }} title="上一条">‹</button>
+                        <button className="modal-side-btn next" disabled={!hasNext()} onClick={(e) => { e.stopPropagation(); goNext(); }} title="下一条">›</button>
+                        <button className="modal-side-btn prev" disabled={!hasPrev()} onClick={(e) => { e.stopPropagation(); goPrev(); }} title="上一条">‹</button>
+                        <button className="modal-side-btn next" disabled={!hasNext()} onClick={(e) => { e.stopPropagation(); goNext(); }} title="下一条">›</button>
                         <div className="modal-header">
                             <h2 className="modal-title">{previewKp.title}</h2>
-                            <button className="modal-close-btn" onClick={() => setPreviewKp(null)}>×</button>
+                            <button className="modal-close-btn" onClick={() => setPreviewKp(null)} title="关闭">×</button>
                         </div>
                         <div className="modal-body">
                             <div className="markdown-content">
                                 {renderContent(previewKp)}
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <div className="modal-footer-actions">
+                                <button className="edit-btn action-btn" onClick={() => navigate(`/kp/edit/${getId(previewKp)}`)}>编辑</button>
+                                <button className="feynman-btn action-btn" onClick={() => navigate(`/feynman/${getId(previewKp)}`)}>开始复述</button>
+                                <button className="edit-btn action-btn" onClick={() => navigate(`/quiz/${getId(previewKp)}`)}>开始测评</button>
+                                <button className="delete-btn action-btn" onClick={() => handleDelete(getId(previewKp), { fromModal: true })}>删除</button>
                             </div>
                         </div>
                     </div>

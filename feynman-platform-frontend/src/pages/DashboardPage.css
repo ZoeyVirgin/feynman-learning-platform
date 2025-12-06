@@ -250,6 +250,7 @@
 }
 
 .modal-container {
+    position: relative; /* 让侧边切换按钮能绝对定位在容器内 */
     width: min(1000px, 92vw);
     max-height: 90vh;
     background: var(--color-surface, #fff);
@@ -265,14 +266,25 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     padding: 12px 16px;
     border-bottom: 1px solid var(--color-border);
     background: var(--color-surface);
 }
 
+.modal-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .modal-title {
+    flex: 1;
     font-size: 18px;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .modal-close-btn {
@@ -289,8 +301,27 @@
     color: var(--color-danger);
 }
 
+.modal-nav-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+}
+
+.modal-nav-btn:hover {
+    background: var(--color-surface-soft);
+}
+
+.modal-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .modal-body {
-    padding: 16px;
+    /* 为侧边导航按钮预留左右空间，避免遮挡正文 */
+    padding: 16px 56px;
     overflow: auto;
     max-height: 75vh;
     background: var(--color-surface);
@@ -301,3 +332,48 @@
     max-height: none;
     overflow: visible;
 }
+
+.modal-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding: 10px 16px;
+}
+
+.modal-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 侧边切换按钮（覆盖在内容两侧） */
+.modal-side-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    cursor: pointer;
+    user-select: none;
+}
+
+.modal-side-btn:hover {
+    background: var(--color-surface-soft);
+}
+
+.modal-side-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.modal-side-btn.prev { left: 8px; }
+.modal-side-btn.next { right: 8px; }
