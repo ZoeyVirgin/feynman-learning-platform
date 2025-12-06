@@ -8,7 +8,6 @@ import KnowledgePointFormPage from './pages/KnowledgePointFormPage';
 import FeynmanRecordPage from './pages/FeynmanRecordPage';
 import QuizPage from './pages/QuizPage';
 import BatchQuizPage from './pages/BatchQuizPage';
-import AuthLandingPage from './pages/AuthLandingPage';
 
 function App() {
   return (
@@ -17,7 +16,6 @@ function App() {
         {/* 公共路由 */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/welcome" element={<AuthLandingPage />} />
 
         {/* 受保护的路由 */}
         <Route element={<ProtectedRoute />}>
