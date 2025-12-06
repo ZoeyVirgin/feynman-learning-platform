@@ -30,14 +30,14 @@
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    background-color: #4CAF50;
+    background-color: var(--color-success);
     color: white;
     font-size: 16px;
     transition: background-color 0.2s;
 }
 
 .new-kp-btn:hover {
-    background-color: #45a049;
+    background-color: var(--color-success-hover);
 }
 
 /* 批量工具条 */
@@ -50,21 +50,21 @@
 .bulk-toggle-btn {
     padding: 8px 14px;
     border-radius: 6px;
-    border: 1px solid #ced4da;
-    background: #fff;
-    color: #343a40; /* 防止被全局 button 设为白字 */
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text); /* 防止被全局 button 设为白字 */
     cursor: pointer;
 }
 
 .bulk-toggle-btn:hover {
-    background: #f8f9fa; /* 避免全局 button:hover 把背景变蓝 */
-    color: #212529;
+    background: var(--color-surface-soft); /* 避免全局 button:hover 把背景变蓝 */
+    color: var(--color-text);
 }
 
 .bulk-toggle-btn.active {
-    border-color: #4c6ef5;
-    background: #edf2ff;
-    color: #364fc7;
+    border-color: var(--color-link);
+    background: var(--color-link-soft);
+    color: var(--color-primary);
 }
 
 .bulk-actions {
@@ -75,7 +75,7 @@
 
 .bulk-selected-count {
     font-size: 14px;
-    color: #495057;
+    color: var(--color-muted);
 }
 
 .bulk-action-btn {
@@ -86,19 +86,19 @@
 }
 
 .bulk-action-btn.primary {
-    background: #228be6;
+    background: var(--color-link);
     color: #fff;
 }
 .bulk-action-btn.primary:hover {
-    background: #1c7ed6; /* 明确 hover，避免被全局覆盖 */
+    background: var(--color-primary); /* 主题 hover */
 }
 
 .bulk-action-btn.danger {
-    background: #fa5252;
+    background: var(--color-danger);
     color: #fff;
 }
 .bulk-action-btn.danger:hover {
-    background: #f03e3e; /* 明确 hover，避免被全局覆盖 */
+    background: var(--color-danger-hover); /* 主题 hover */
 }
 
 .bulk-action-btn:disabled,
@@ -124,7 +124,7 @@
 /* 卡片本体 */
 .knowledge-point-card {
     position: relative; /* 便于在左上角放复选框 */
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 16px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -136,8 +136,8 @@
 
 /* 选中高亮（红色系） */
 .knowledge-point-card.selected {
-    border-color: #ff6b6b;
-    background-color: #fff5f5;
+    border-color: var(--color-danger);
+    background-color: var(--color-danger-soft);
     box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
 }
 

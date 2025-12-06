@@ -24,7 +24,7 @@
 
 /* 各个区域分隔线 */
 .feynman-record-page hr {
-    border: 1px solid #e0e0e0; /* 灰白色细线 */
+    border: 1px solid var(--color-border); /* 灰白色细线 */
     margin: 20px 0;
 }
 
