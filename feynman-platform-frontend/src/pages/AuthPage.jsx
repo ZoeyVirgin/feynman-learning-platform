@@ -115,26 +115,30 @@ function AuthPage({ initialMode }) {
   const toggleCard = async () => {
     setIsFading(true);
     setTimeout(async () => {
-      if (showImage) {
-        // 准备文本：优先使用预取池，确保不与上一条重复
+      const chooseImage = Math.random() < 0.5; // 50% 概率展示图片或冷知识
+
+      if (chooseImage && images.length) {
+        // 随机跳过 1~(len-1) 张，避免重复当前图
+        const len = images.length;
+        const step = len > 1 ? (1 + Math.floor(Math.random() * (len - 1))) : 0;
+        setImgIndex((i) => i + step);
+        setShowImage(true);
+      } else {
+        // 展示冷知识：优先使用预取池，确保不与上一条重复
         if (factsPool.length < 3) {
           await refillFacts(16);
         }
         setFactsPool((prev) => {
           let pool = prev && prev.length ? prev : shuffle([...fallbackFacts]);
-          // 去重，挑选与上一次不同的项
           pool = Array.from(new Set(pool));
-          const next = pickDifferent(pool, lastFact) || fallbackFacts[Math.floor(Math.random()*fallbackFacts.length)];
+          const next = pickDifferent(pool, lastFact) || fallbackFacts[Math.floor(Math.random() * fallbackFacts.length)];
           setFact(next);
           setLastFact(next);
-          // 消耗本次项以避免立即重复
+          setShowImage(false);
           return pool.filter((t) => t !== next);
         });
-      } else {
-        // 切回图片：步进随机，减少相邻重复几率
-        setImgIndex((i) => i + 1 + Math.floor(Math.random() * 3));
       }
-      setShowImage((v) => !v);
+
       setIsFading(false);
     }, 180);
   };
