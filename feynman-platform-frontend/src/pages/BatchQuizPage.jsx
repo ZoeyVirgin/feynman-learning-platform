@@ -137,7 +137,7 @@ function BatchQuizPage() {
           {kps.map((kp) => (
             <span key={kp.id ?? kp._id} style={{
               padding: '4px 8px',
-              background: '#f1f3f5',
+              background: 'var(--color-surface-soft)',
               borderRadius: 12,
               fontSize: 12,
               border: '1px solid #dee2e6'

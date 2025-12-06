@@ -4,7 +4,6 @@
     width: min(1100px, calc(100vw - 64px));
     margin: 0 auto; /* 居中显示 */
     padding: 20px;
-    font-family: Arial, sans-serif; /* 设置统一字体 */
 }
 
 @media (max-width: 768px) {
@@ -48,21 +47,22 @@
 /* 开始/停止录音按钮 */
 .feynman-record-page .record-btn {
     padding: 8px 16px;
-    background-color: #2196F3;
-    color: white;
+    background-color: var(--color-primary);
+    color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 .feynman-record-page .record-btn:hover {
-    background-color: #1976D2;
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-sm);
 }
 
 .feynman-record-page .record-btn:disabled {
-    background-color: #b0bec5;
+    background-color: var(--color-disabled);
     cursor: not-allowed;
 }
 

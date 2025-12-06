@@ -70,11 +70,12 @@ body {
   padding: 8px 16px;
   border-radius: 8px;
   border: 1px solid var(--color-danger);
-  background: var(--color-danger);
-  color: #fff;
+  background: transparent;
+  color: var(--color-danger);
   cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
 }
-.top-nav .nav-logout:hover { background: var(--color-danger-hover); }
+.top-nav .nav-logout:hover { background: var(--color-danger-soft); color: var(--color-danger-hover); box-shadow: var(--shadow-sm); }
 
 /* 主内容区域 */
 main {
@@ -222,7 +223,7 @@ main {
   margin-top: 12px;
   border: none !important;
   border-radius: 28px; /* 胶囊按钮 */
-  background-color: #1c7ed6 !important; /* 主色填充 */
+  background-color: var(--color-primary) !important; /* 主色填充 */
   color: #fff !important;
   font-weight: 600;
   cursor: pointer;
@@ -230,14 +231,14 @@ main {
 }
 
 .login-right .primary-btn:hover {
-  background-color: #1864ab !important;
-  box-shadow: 0 6px 16px rgba(24,100,171,0.25);
+  background-color: var(--color-primary-hover) !important;
+  box-shadow: 0 6px 16px rgba(42, 71, 90, 0.25);
 }
 
 .login-right .primary-btn:disabled {
   opacity: .6;
   cursor: not-allowed;
-  background-color: #a5d8ff !important;
+  background-color: var(--color-disabled) !important;
   box-shadow: none;
 }
 
@@ -291,38 +292,46 @@ button:hover {
 /* 通用返回按钮（统一样式） */
 .back-btn {
   padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  background-color: var(--color-success);
-  color: #fff;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text);
   font-weight: 600;
   cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
 }
 .back-btn:hover {
-  background-color: var(--color-success-hover);
+  background-color: var(--color-surface-soft);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 /* 测评页不同难度/题型按钮配色 */
 .btn-basic {
-  background-color: #2ecc71; /* 绿：基础 */
+  background: transparent;
+  color: var(--color-link);
+  border: 1px solid var(--color-link);
 }
-.btn-basic:hover { background-color: #27ae60; }
+.btn-basic:hover { background: var(--color-link-soft); color: var(--color-link-hover); }
 
 .btn-medium {
-  background-color: #f1c40f; /* 黄：中等 */
-  color: #333;
+  background-color: var(--color-primary);
+  color: #fff;
 }
-.btn-medium:hover { background-color: #d4ac0d; }
+.btn-medium:hover { background-color: var(--color-primary-hover); }
 
 .btn-hard {
-  background-color: #e74c3c; /* 红：困难 */
+  background-color: var(--color-primary-hover);
+  color: #fff;
 }
-.btn-hard:hover { background-color: #c0392b; }
+.btn-hard:hover { filter: brightness(0.95); }
 
 .btn-short {
-  background-color: #8e44ad; /* 紫：简答 */
+  background: var(--color-surface-soft);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
 }
-.btn-short:hover { background-color: #7d3c98; }
+.btn-short:hover { background: rgba(58,95,125,0.08); color: var(--color-primary-hover); }
 
 /* 禁用态 */
 button:disabled {

@@ -27,17 +27,18 @@
 
 .new-kp-btn {
     padding: 10px 20px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
-    background-color: var(--color-success);
-    color: white;
+    background-color: var(--color-primary);
+    color: #fff;
     font-size: 16px;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 .new-kp-btn:hover {
-    background-color: var(--color-success-hover);
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-sm);
 }
 
 /* 批量工具条 */
@@ -94,11 +95,13 @@
 }
 
 .bulk-action-btn.danger {
-    background: var(--color-danger);
-    color: #fff;
+    background: transparent;
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
 }
 .bulk-action-btn.danger:hover {
-    background: var(--color-danger-hover); /* 主题 hover */
+    background: var(--color-danger-soft);
+    color: var(--color-danger-hover);
 }
 
 .bulk-action-btn:disabled,
@@ -190,34 +193,36 @@
     transition: background-color 0.2s;
 }
 
-/* 编辑按钮 */
+/* 编辑按钮（蓝灰主色） */
 .edit-btn {
-    background-color: #2196F3;
-    color: white;
+    background-color: var(--color-primary);
+    color: #fff;
 }
 
 .edit-btn:hover {
-    background-color: #1976D2;
+    background-color: var(--color-primary-hover);
 }
 
-/* 开始复述按钮 */
+/* 开始复述按钮（链接蓝灰） */
 .feynman-btn {
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--color-link);
+    color: #fff;
 }
 
 .feynman-btn:hover {
-    background-color: #45a049;
+    background-color: var(--color-link-hover);
 }
 
-/* 删除按钮 */
+/* 删除按钮（柔和危险：描边 + 浅底） */
 .delete-btn {
-    background-color: red;
-    color: white;
+    background-color: transparent;
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
 }
 
 .delete-btn:hover {
-    background-color: #cc0000;
+    background-color: var(--color-danger-soft);
+    color: var(--color-danger-hover);
 }
 
 /* 加载/错误提示 */
