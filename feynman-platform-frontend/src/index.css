@@ -51,10 +51,10 @@ main {
 
 .login-card-wrap {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 7fr 5fr;
   gap: 0;
-  width: clamp(1000px, 70vw, 1240px); /* 贴近参考图：在 1000~1240px 之间随屏幕伸缩 */
-  margin: 24px auto; /* 始终居中且与上下留白 */
+  width: clamp(920px, 60vw, 1100px); /* 更窄更修长，贴近参考图 */
+  margin: 40px auto; /* 更大上下留白，显得大气 */
   background: #fff;
   border-radius: 18px;
   box-shadow: 0 10px 24px rgba(0,0,0,0.08);
@@ -80,20 +80,20 @@ main {
 /* 左侧互动卡片（整合到同一白卡中） */
 .login-media-box {
   width: 100%;
-  aspect-ratio: 4 / 3; /* 固定比例，避免抖动 */
-  min-height: 520px; /* 贴近参考图的视觉高度 */
+  /* 默认高度：在 560px ~ 820px 间随视口变化；JS 计算到图片比例后会覆盖成精确高度 */
+  height: clamp(560px, 62vh, 820px);
   border-radius: 12px;
   overflow: hidden;
   background: linear-gradient(135deg, #e6f4ea, #f1f3f5); /* 柔和底色，填充留白 */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity .2s ease;
+  transition: height .25s ease, opacity .2s ease;
 }
 
 @media (max-width: 900px) {
   .login-media-box {
-    min-height: 280px; /* 移动端降低高度 */
+    height: clamp(280px, 40vh, 420px);
   }
 }
 

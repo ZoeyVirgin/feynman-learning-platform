@@ -1,5 +1,5 @@
 // src/pages/AuthPage.jsx
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import apiClient from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -29,6 +29,10 @@ function AuthPage({ initialMode }) {
   const [showImage, setShowImage] = useState(true);
   const [imgIndex, setImgIndex] = useState(() => Math.floor(Math.random() * 1000));
   const currentImage = images.length ? images[imgIndex % images.length] : null;
+  const mediaRef = useRef(null);
+  const imgRef = useRef(null);
+  const [imageRatio, setImageRatio] = useState(null); // w/h 比例
+  const [boxHeight, setBoxHeight] = useState(null);
 
   const fallbackFacts = [
     '你知道吗？键盘 QWERTY 排列源自打字机时代，为了减少卡纸几率。',
@@ -100,6 +104,23 @@ function AuthPage({ initialMode }) {
     }
   };
 
+  // 根据图片比例动态计算左侧盒子高度，保证图片完整显示且整体拉长
+  useEffect(() => {
+    const compute = (ratio) => {
+      if (!mediaRef.current) return;
+      const w = mediaRef.current.clientWidth || 600;
+      let h = ratio ? Math.round(w / ratio) : Math.round(window.innerHeight * 0.62);
+      // 夹取范围以保持大气但不溢出
+      h = Math.max(520, Math.min(900, h));
+      setBoxHeight(h);
+    };
+
+    compute(imageRatio);
+    const onResize = () => compute(imageRatio);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [imageRatio]);
+
   const switchTo = (next) => {
     setMode(next);
     setError('');
@@ -120,10 +141,21 @@ function AuthPage({ initialMode }) {
           aria-pressed={!showImage}
           onKeyDown={onKeyToggle}
         >
-          <div className="login-media-box">
+          <div className="login-media-box" ref={mediaRef} style={boxHeight ? { height: boxHeight } : undefined}>
             {showImage ? (
               currentImage ? (
-                <img src={currentImage} alt="knowledge-illustration" className="login-img" />
+                <img
+                  ref={imgRef}
+                  src={currentImage}
+                  alt="knowledge-illustration"
+                  className="login-img"
+                  onLoad={(e) => {
+                    const w = e.currentTarget.naturalWidth || 0;
+                    const h = e.currentTarget.naturalHeight || 0;
+                    if (w && h) setImageRatio(w / h);
+                  }}
+                  onError={() => setImageRatio(null)}
+                />
               ) : (
                 <div className="login-img placeholder" />
               )
