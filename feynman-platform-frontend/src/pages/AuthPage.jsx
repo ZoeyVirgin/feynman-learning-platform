@@ -178,6 +178,50 @@ function AuthPage({ initialMode }) {
     if (next === 'register') setFormData((d) => ({ username: '', email: d.email, password: '' }));
   };
 
+  // 将一句话拆解为“多元化样式”的字符拼装
+  const hashString = (s = '') => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  };
+
+  const renderStyledFact = (text = '') => {
+    const h = hashString(text);
+    const palette = ['var(--color-text)', 'var(--color-primary)', 'var(--color-link)'];
+    const chars = Array.from(text);
+    const nodes = chars.map((ch, i) => {
+      // 对空白或标点减弱处理，保持可读性
+      const isPunct = /[\s\u3000\,\.\!\?\-\—\(\)\[\]，。！？；：、]/.test(ch);
+      const color = isPunct ? 'var(--color-text)' : palette[(h + i * 7) % palette.length];
+      const size = isPunct ? 18 : 16 + ((h >> (i % 16)) & 6); // 16~22px
+      const italic = !isPunct && ((h + i) % 5 === 0);
+      const weight = !isPunct && ((h >> ((i + 3) % 16)) & 1) ? 700 : 500;
+      const tiltSeed = ((h >> ((i + 5) % 16)) & 3) - 1; // -1..2
+      const rotate = isPunct ? 0 : Math.max(-3, Math.min(3, tiltSeed));
+
+      const style = {
+        color,
+        fontSize: size,
+        fontStyle: italic ? 'italic' : 'normal',
+        fontWeight: weight,
+        transform: rotate ? `rotate(${rotate}deg)` : undefined,
+        marginRight: ch === ' ' ? 4 : 1,
+      };
+
+      return (
+        <span key={i} className="styled-char" style={style} aria-hidden="true">{ch}</span>
+      );
+    });
+
+    // 辅助：屏幕阅读器仍能读取完整文本
+    return (
+      <>
+        <span className="sr-only" aria-label={text}></span>
+        {nodes}
+      </>
+    );
+  };
+
   return (
     <div className="login-page">
       <div className="login-card-wrap">
@@ -209,7 +253,7 @@ function AuthPage({ initialMode }) {
                 <div className="login-img placeholder" />
               )
             ) : (
-              <div className="login-fact" aria-live="polite">{fact || fallbackFacts[0]}</div>
+              <div className="login-fact" aria-live="polite">{renderStyledFact(fact || fallbackFacts[0])}</div>
             )}
           </div>
 
