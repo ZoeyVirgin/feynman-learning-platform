@@ -200,7 +200,7 @@ function AuthPage({ initialMode }) {
               placeholder={mode === 'login' ? '密码' : '设置密码'}
               required
             />
-            <button type="submit" disabled={submitting}>{mode === 'login' ? '登录' : '注册'}</button>
+            <button type="submit" className="primary-btn" disabled={submitting}>{mode === 'login' ? '登录' : '注册'}</button>
           </form>
           {error && <p style={{ color: 'red' }}>{error}</p>}
 

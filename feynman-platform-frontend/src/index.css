@@ -77,6 +77,11 @@ main {
   align-items: center;
 }
 
+/* 右侧区域垂直居中 */
+.login-right {
+  justify-content: center;
+}
+
 /* 左侧互动卡片（整合到同一白卡中） */
 .login-media-box {
   width: 100%;
@@ -129,10 +134,66 @@ main {
   color: #868e96;
 }
 
-/* 右侧区域内的表单沿用全局 form 样式，这里仅做容器宽度限制 */
+/* 右侧区域表单：覆盖全局 form 样式，做“无卡片感”极简风 */
 .login-right form {
   width: 100%;
-  max-width: 420px; /* 略放大表单宽度，贴近参考图 */
+  max-width: 420px; /* 贴近参考图 */
+  background: transparent; /* 覆盖全局白底 */
+  box-shadow: none;        /* 覆盖全局阴影 */
+  border-radius: 0;        /* 覆盖全局圆角 */
+  padding: 0;              /* 覆盖全局内边距 */
+}
+
+.login-right form input {
+  width: 100%;
+  padding: 12px 4px;
+  margin: 10px 0;
+  border: none;
+  border-bottom: 1.5px solid rgba(0,0,0,0.18);
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+  color: #2c3e50;
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.login-right form input::placeholder {
+  color: #adb5bd;
+}
+
+.login-right form input:hover {
+  border-bottom-color: rgba(0,0,0,0.32);
+}
+
+.login-right form input:focus {
+  border-bottom-color: #3b5bdb;
+  box-shadow: 0 1px 0 0 #3b5bdb;
+}
+
+/* 极简主按钮：看起来像文字，实际可点击 */
+.login-right .primary-btn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 4px;
+  border: none !important;
+  background: transparent !important; /* 覆盖全局 button 背景 */
+  color: #1c7ed6;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 1.5px solid rgba(0,0,0,0);
+  transition: color .2s ease, background-color .2s ease, border-bottom-color .2s ease;
+}
+
+.login-right .primary-btn:hover {
+  color: #1864ab;
+  background-color: rgba(24, 100, 171, 0.06);
+  border-bottom-color: rgba(24, 100, 171, 0.25);
+}
+
+.login-right .primary-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  background: transparent !important;
 }
 
 /* 表单样式 */
