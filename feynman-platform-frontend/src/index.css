@@ -173,28 +173,40 @@ main {
 /* 极简主按钮：看起来像文字，实际可点击 */
 .login-right .primary-btn {
   width: 100%;
-  text-align: left;
-  padding: 12px 4px;
+  text-align: center;
+  padding: 12px 14px;
+  margin-top: 12px;
   border: none !important;
-  background: transparent !important; /* 覆盖全局 button 背景 */
-  color: #1c7ed6;
+  border-radius: 28px; /* 胶囊按钮 */
+  background-color: #1c7ed6 !important; /* 主色填充 */
+  color: #fff !important;
   font-weight: 600;
   cursor: pointer;
-  border-bottom: 1.5px solid rgba(0,0,0,0);
-  transition: color .2s ease, background-color .2s ease, border-bottom-color .2s ease;
+  transition: background-color .2s ease, box-shadow .2s ease;
 }
 
 .login-right .primary-btn:hover {
-  color: #1864ab;
-  background-color: rgba(24, 100, 171, 0.06);
-  border-bottom-color: rgba(24, 100, 171, 0.25);
+  background-color: #1864ab !important;
+  box-shadow: 0 6px 16px rgba(24,100,171,0.25);
 }
 
 .login-right .primary-btn:disabled {
-  opacity: .55;
+  opacity: .6;
   cursor: not-allowed;
-  background: transparent !important;
+  background-color: #a5d8ff !important;
+  box-shadow: none;
 }
+
+/* 底部切换按钮：去卡片化（文字样式） */
+.switch-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0;
+  color: #1c7ed6;
+  font-weight: 600;
+  cursor: pointer;
+}
+.switch-btn:hover { color: #1864ab; text-decoration: underline; }
 
 /* 表单样式 */
 form {

@@ -208,12 +208,12 @@ function AuthPage({ initialMode }) {
             {mode === 'login' ? (
               <>
                 <span style={{ color: '#868e96', fontSize: 12 }}>还没有账号？</span>
-                <button className="back-btn" onClick={() => switchTo('register')} style={{ marginLeft: 8 }}>去注册</button>
+                <button className="switch-btn" onClick={() => switchTo('register')} style={{ marginLeft: 8 }}>去注册</button>
               </>
             ) : (
               <>
                 <span style={{ color: '#868e96', fontSize: 12 }}>已有账号？</span>
-                <button className="back-btn" onClick={() => switchTo('login')} style={{ marginLeft: 8 }}>去登录</button>
+                <button className="switch-btn" onClick={() => switchTo('login')} style={{ marginLeft: 8 }}>去登录</button>
               </>
             )}
           </div>
