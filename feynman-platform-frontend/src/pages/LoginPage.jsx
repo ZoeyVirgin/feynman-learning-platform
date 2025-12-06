@@ -84,57 +84,61 @@ function LoginPage() {
 
   return (
     <div className="login-page">
-      {/* 左侧展示卡片 */}
-      <section
-        className={`login-left ${isFading ? 'fade' : ''}`}
-        onClick={toggleCard}
-        role="button"
-        tabIndex={0}
-        aria-pressed={!showImage}
-        onKeyDown={onKeyToggle}
-      >
-        <div className="login-card">
-          {showImage ? (
-            currentImage ? (
-              <img src={currentImage} alt="knowledge-illustration" className="login-img" />
+      <div className="login-card-wrap">
+        {/* 左侧：互动图片/冷知识 */}
+        <section
+          className={`login-left ${isFading ? 'fade' : ''}`}
+          onClick={toggleCard}
+          role="button"
+          tabIndex={0}
+          aria-pressed={!showImage}
+          onKeyDown={onKeyToggle}
+        >
+          <div className="login-media-box">
+            {showImage ? (
+              currentImage ? (
+                <img src={currentImage} alt="knowledge-illustration" className="login-img" />
+              ) : (
+                <div className="login-img placeholder" />
+              )
             ) : (
-              <div className="login-img placeholder" />
-            )
-          ) : (
-            <div className="login-fact" aria-live="polite">{fact || fallbackFacts[0]}</div>
-          )}
-        </div>
-        <div className="login-tip">{showImage ? '点击查看冷知识' : '点击查看插画'}</div>
-      </section>
+              <div className="login-fact" aria-live="polite">{fact || fallbackFacts[0]}</div>
+            )}
+          </div>
+          <div className="login-tip">{showImage ? '点击查看冷知识' : '点击查看插画'}</div>
+        </section>
 
-      {/* 右侧登录区域：仅替换顶部标语 */}
-      <section className="login-right">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <button className="back-btn" onClick={() => navigate(-1)}>返回</button>
-          <h1 style={{ margin: 0 }}>便捷・智能・个性化</h1>
-        </div>
+        {/* 右侧：登录表单（整合到同一白卡中） */}
+        <section className="login-right">
+          <h1 className="login-title">欢迎回来</h1>
+          <div className="login-subtitle">便捷・智能・个性化</div>
 
-        <form onSubmit={handleSubmit}>
-          <input
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="邮箱"
-            required
-          />
-          <input
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="密码"
-            required
-          />
-          <button type="submit">登录</button>
-        </form>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </section>
+          <form onSubmit={handleSubmit}>
+            <input
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="邮箱"
+              required
+            />
+            <input
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="密码"
+              required
+            />
+            <button type="submit">登录</button>
+          </form>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          <div className="login-links" style={{ marginTop: 12 }}>
+            <span style={{ color: '#868e96', fontSize: 12 }}>还没有账号？</span>
+            <button className="back-btn" onClick={() => navigate('/register')} style={{ marginLeft: 8 }}>去注册</button>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

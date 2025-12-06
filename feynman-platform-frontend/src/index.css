@@ -42,34 +42,43 @@ main {
 }
 
 /* 登录页布局 */
+/* 登录页布局 */
 .login-page {
-  display: flex;
-  gap: 24px;
+  width: 100%;
+}
+
+.login-card-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
   width: min(1100px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  overflow: hidden; /* 让子元素圆角一致 */
 }
 
 @media (max-width: 900px) {
-  .login-page {
-    flex-direction: column;
-    width: 100%;
+  .login-card-wrap {
+    grid-template-columns: 1fr;
+    border-radius: 12px;
   }
 }
 
 .login-left, .login-right {
-  flex: 1;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* 左侧互动卡片 */
-.login-card {
+/* 左侧互动卡片（整合到同一白卡中） */
+.login-media-box {
   width: 100%;
   aspect-ratio: 4 / 3; /* 固定比例，避免抖动 */
   border-radius: 12px;
   overflow: hidden;
-  background: #f3f5f7;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, #e6f4ea, #f1f3f5); /* 柔和底色，填充留白 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,14 +86,14 @@ main {
 }
 
 /* 淡入淡出：在切换瞬间降低不透明度 */
-.login-left.fade .login-card {
+.login-left.fade .login-media-box {
   opacity: 0.2;
 }
 
 .login-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 方案1：充满并裁切四周少量区域 */
+  object-fit: contain; /* 完整显示图片，比例不符留白由背景填充 */
   display: block;
 }
 
