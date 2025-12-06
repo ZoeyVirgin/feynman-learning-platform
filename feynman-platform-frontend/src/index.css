@@ -45,15 +45,18 @@ main {
 /* 登录页布局 */
 .login-page {
   width: 100%;
+  display: flex;
+  justify-content: center; /* 始终水平居中 */
 }
 
 .login-card-wrap {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
-  width: min(1100px, 100%);
+  width: clamp(1000px, 70vw, 1240px); /* 贴近参考图：在 1000~1240px 之间随屏幕伸缩 */
+  margin: 24px auto; /* 始终居中且与上下留白 */
   background: #fff;
-  border-radius: 16px;
+  border-radius: 18px;
   box-shadow: 0 10px 24px rgba(0,0,0,0.08);
   overflow: hidden; /* 让子元素圆角一致 */
 }
@@ -61,6 +64,8 @@ main {
 @media (max-width: 900px) {
   .login-card-wrap {
     grid-template-columns: 1fr;
+    width: min(94vw, 100%);
+    margin: 12px auto;
     border-radius: 12px;
   }
 }
@@ -76,6 +81,7 @@ main {
 .login-media-box {
   width: 100%;
   aspect-ratio: 4 / 3; /* 固定比例，避免抖动 */
+  min-height: 520px; /* 贴近参考图的视觉高度 */
   border-radius: 12px;
   overflow: hidden;
   background: linear-gradient(135deg, #e6f4ea, #f1f3f5); /* 柔和底色，填充留白 */
@@ -83,6 +89,12 @@ main {
   align-items: center;
   justify-content: center;
   transition: opacity .2s ease;
+}
+
+@media (max-width: 900px) {
+  .login-media-box {
+    min-height: 280px; /* 移动端降低高度 */
+  }
 }
 
 /* 淡入淡出：在切换瞬间降低不透明度 */
@@ -120,7 +132,7 @@ main {
 /* 右侧区域内的表单沿用全局 form 样式，这里仅做容器宽度限制 */
 .login-right form {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px; /* 略放大表单宽度，贴近参考图 */
 }
 
 /* 表单样式 */
