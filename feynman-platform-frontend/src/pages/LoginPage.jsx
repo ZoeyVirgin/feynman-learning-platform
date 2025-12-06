@@ -48,7 +48,10 @@ function LoginPage() {
 
   return (
     <div>
-      <h1>登录</h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <button className="back-btn" onClick={() => navigate(-1)}>返回</button>
+        <h1 style={{ margin: 0 }}>登录</h1>
+      </div>
       <form onSubmit={handleSubmit}>
         <input
           name="email"
