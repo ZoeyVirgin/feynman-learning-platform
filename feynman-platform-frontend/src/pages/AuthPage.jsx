@@ -192,20 +192,26 @@ function AuthPage({ initialMode }) {
     const nodes = chars.map((ch, i) => {
       // 对空白或标点减弱处理，保持可读性
       const isPunct = /[\s\u3000\,\.\!\?\-\—\(\)\[\]，。！？；：、]/.test(ch);
-      const color = isPunct ? 'var(--color-text)' : palette[(h + i * 7) % palette.length];
-      const size = isPunct ? 18 : 16 + ((h >> (i % 16)) & 6); // 16~22px
-      const italic = !isPunct && ((h + i) % 5 === 0);
-      const weight = !isPunct && ((h >> ((i + 3) % 16)) & 1) ? 700 : 500;
-      const tiltSeed = ((h >> ((i + 5) % 16)) & 3) - 1; // -1..2
-      const rotate = isPunct ? 0 : Math.max(-3, Math.min(3, tiltSeed));
+      const baseColor = isPunct ? 'var(--color-text)' : palette[(h + i * 7) % palette.length];
+      const accent = !isPunct && ((h + i * 13) % 7 === 0); // 约14%字符做强调
+      const color = accent ? baseColor : baseColor;
+      const size = isPunct ? 20 : (accent ? 24 + ((h >> (i % 16)) & 8) : 16 + ((h >> (i % 16)) & 6)); // 强调最大可达 ~32px
+      const italic = !isPunct && ((h + i) % 4 === 0 || accent);
+      const weight = !isPunct && (accent || ((h >> ((i + 3) % 16)) & 1)) ? 800 : 500;
+      const tiltSeed = ((h >> ((i + 5) % 16)) & 7) - 3; // -3..4
+      const rotate = isPunct ? 0 : Math.max(-12, Math.min(12, tiltSeed * 2)); // 倾斜放大
+      const translateY = isPunct ? 0 : (((h >> ((i + 7) % 16)) & 3) - 1) * (accent ? 2 : 1); // 轻微上下浮动
+      const letterSpace = isPunct ? 0 : (accent ? 0.5 : 0);
 
       const style = {
         color,
         fontSize: size,
         fontStyle: italic ? 'italic' : 'normal',
         fontWeight: weight,
-        transform: rotate ? `rotate(${rotate}deg)` : undefined,
-        marginRight: ch === ' ' ? 4 : 1,
+        transform: rotate || translateY ? `translateY(${translateY}px) rotate(${rotate}deg)` : undefined,
+        marginRight: ch === ' ' ? 6 : 2,
+        letterSpacing: letterSpace,
+        display: 'inline-block',
       };
 
       return (
