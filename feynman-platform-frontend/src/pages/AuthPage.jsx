@@ -131,13 +131,12 @@ function AuthPage({ initialMode }) {
               <div className="login-fact" aria-live="polite">{fact || fallbackFacts[0]}</div>
             )}
           </div>
-          <div className="login-tip">{showImage ? '点击查看冷知识' : '点击查看插画'}</div>
+
         </section>
 
         {/* 右侧：登录/注册表单 */}
         <section className="login-right">
           <h1 className="login-title">{mode === 'login' ? '欢迎回来' : '新建账号'}</h1>
-          <div className="login-subtitle">便捷・智能・个性化</div>
 
           <form onSubmit={handleSubmit}>
             {mode === 'register' && (
