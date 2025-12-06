@@ -42,7 +42,42 @@ function AuthPage({ initialMode }) {
     '你知道吗？章鱼有三个心脏和蓝色的血液。'
   ];
   const [fact, setFact] = useState('');
+  const [lastFact, setLastFact] = useState('');
+  const [factsPool, setFactsPool] = useState([]); // 预取池，避免重复
   const [isFading, setIsFading] = useState(false);
+
+  const shuffle = (arr) => arr
+    .map((v) => ({ v, r: Math.random() }))
+    .sort((a, b) => a.r - b.r)
+    .map(({ v }) => v);
+
+  const pickDifferent = (arr, last) => {
+    if (!arr || arr.length === 0) return '';
+    if (arr.length === 1) return arr[0];
+    let candidate = arr[0];
+    if (candidate === last) candidate = arr[1] ?? candidate;
+    return candidate;
+  };
+
+  const refillFacts = async (n = 16) => {
+    try {
+      const res = await apiClient.get(`/knowledge?limit=${n}`);
+      const texts = (Array.isArray(res.data) ? res.data : [])
+        .map((x) => (typeof x === 'string' ? x : x?.text))
+        .filter(Boolean);
+      if (texts.length) {
+        setFactsPool((prev) => shuffle([...prev, ...texts]));
+      }
+    } catch {
+      // 失败时用本地兜底补齐
+      setFactsPool((prev) => shuffle([...prev, ...fallbackFacts]));
+    }
+  };
+
+  useEffect(() => {
+    // 首次预取一批
+    refillFacts(20);
+  }, []);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -81,16 +116,23 @@ function AuthPage({ initialMode }) {
     setIsFading(true);
     setTimeout(async () => {
       if (showImage) {
-        if (!fact) {
-          try {
-            const res = await apiClient.get('/knowledge/random');
-            setFact(res?.data?.text || fallbackFacts[Math.floor(Math.random() * fallbackFacts.length)]);
-          } catch {
-            setFact(fallbackFacts[Math.floor(Math.random() * fallbackFacts.length)]);
-          }
+        // 准备文本：优先使用预取池，确保不与上一条重复
+        if (factsPool.length < 3) {
+          await refillFacts(16);
         }
+        setFactsPool((prev) => {
+          let pool = prev && prev.length ? prev : shuffle([...fallbackFacts]);
+          // 去重，挑选与上一次不同的项
+          pool = Array.from(new Set(pool));
+          const next = pickDifferent(pool, lastFact) || fallbackFacts[Math.floor(Math.random()*fallbackFacts.length)];
+          setFact(next);
+          setLastFact(next);
+          // 消耗本次项以避免立即重复
+          return pool.filter((t) => t !== next);
+        });
       } else {
-        setImgIndex((i) => i + 1);
+        // 切回图片：步进随机，减少相邻重复几率
+        setImgIndex((i) => i + 1 + Math.floor(Math.random() * 3));
       }
       setShowImage((v) => !v);
       setIsFading(false);
