@@ -110,8 +110,11 @@ function AuthPage({ initialMode }) {
       if (!mediaRef.current) return;
       const w = mediaRef.current.clientWidth || 600;
       let h = ratio ? Math.round(w / ratio) : Math.round(window.innerHeight * 0.62);
-      // 夹取范围以保持大气但不溢出
-      h = Math.max(520, Math.min(900, h));
+      // 视口上限：保留上下安全间距（约 160px），避免超出无需滚动
+      const viewportCap = Math.max(420, Math.floor(window.innerHeight - 160));
+      h = Math.min(h, viewportCap);
+      // 再次夹取到合理区间（可根据喜好微调）
+      h = Math.max(480, Math.min(860, h));
       setBoxHeight(h);
     };
 
