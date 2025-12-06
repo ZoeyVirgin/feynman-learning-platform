@@ -105,7 +105,7 @@ const isProbablyPureHtml = (str) => {
     const hasHtmlTags = /<\/?[a-z][\s\S]*>/i.test(str);
     if (!hasHtmlTags) return false;
 
-    const hasMarkdownSyntax = /^#{1,6}\s|^\s*[-*+]\s|^\d+\.\s|```|`[^`]+`|\*\*[^*]+\*\*|__[^_]+__|\|.*\||\$\$[\s\S]*?\$\$|\$[^$]+\$/m.test(str);
+    const hasMarkdownSyntax = /^#{1,6}\s|^\s*[-*+]\s|^\d+\.\s|```|`[^`]+`|\*\*[^*]+\*\*|__[^_]+__|\|.*\||\$\$[^$]*?\$\$|\$[^$]+\$/m.test(str);
     const hasMermaidBlock = /```mermaid[\s\S]*?```/i.test(str);
 
     return !hasMarkdownSyntax && !hasMermaidBlock;
@@ -119,6 +119,10 @@ function DashboardPage() {
     // 批量模式与选中集合
     const [bulkMode, setBulkMode] = useState(false);
     const [selectedIds, setSelectedIds] = useState(new Set());
+
+    // 预览弹窗
+    const [previewKp, setPreviewKp] = useState(null);
+
     const navigate = useNavigate();
 
     const getId = (kp) => kp?.id ?? kp?._id;
@@ -139,6 +143,15 @@ function DashboardPage() {
 
         fetchKnowledgePoints();
     }, []);
+
+    useEffect(() => {
+        if (!previewKp) return;
+        const onKeyDown = (e) => {
+            if (e.key === 'Escape') setPreviewKp(null);
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [previewKp]);
 
     const handleDelete = async (id) => {
         if (!window.confirm('你确定要删除这个知识点吗？')) return;
@@ -290,6 +303,9 @@ function DashboardPage() {
                                 onClick={() => {
                                     if (bulkMode) toggleSelect(id);
                                 }}
+                                onDoubleClick={() => {
+                                    if (!bulkMode) setPreviewKp(kp);
+                                }}
                             >
                                 {bulkMode && (
                                     <input
@@ -304,7 +320,7 @@ function DashboardPage() {
                                 <div className="knowledge-point-content markdown-content">
                                     {renderContent(kp)}
                                 </div>
-                                <div className={`knowledge-point-actions ${bulkMode ? 'disabled' : ''}`} onClick={(e) => { if (!bulkMode) e.stopPropagation(); }}>
+                                <div className={`knowledge-point-actions ${bulkMode ? 'disabled' : ''}`} onClick={(e) => { if (!bulkMode) e.stopPropagation(); }} onDoubleClick={(e) => e.stopPropagation()}>
                                     <Link to={`/kp/edit/${id}`} aria-disabled={bulkMode} tabIndex={bulkMode ? -1 : undefined} onClick={bulkMode ? (e) => e.preventDefault() : undefined}>
                                         <button className="edit-btn action-btn" disabled={bulkMode}>编辑</button>
                                     </Link>
@@ -325,6 +341,22 @@ function DashboardPage() {
                             </div>
                         );
                     })}
+                </div>
+            )}
+
+            {previewKp && (
+                <div className="modal-overlay" onClick={() => setPreviewKp(null)}>
+                    <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">{previewKp.title}</h2>
+                            <button className="modal-close-btn" onClick={() => setPreviewKp(null)}>×</button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="markdown-content">
+                                {renderContent(previewKp)}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
