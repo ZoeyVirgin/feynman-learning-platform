@@ -33,6 +33,20 @@ function AuthPage({ initialMode }) {
   const imgRef = useRef(null);
   const [imageRatio, setImageRatio] = useState(null); // w/h 比例
   const [boxHeight, setBoxHeight] = useState(null);
+  const mediaStyle = useMemo(() => (
+    boxHeight ? {
+      height: boxHeight,
+      userSelect: 'none',
+      WebkitUserSelect: 'none',
+      MozUserSelect: 'none',
+      msUserSelect: 'none',
+    } : {
+      userSelect: 'none',
+      WebkitUserSelect: 'none',
+      MozUserSelect: 'none',
+      msUserSelect: 'none',
+    }
+  ), [boxHeight]);
 
   const fallbackFacts = [
     '你知道吗？键盘 QWERTY 排列源自打字机时代，为了减少卡纸几率。',
@@ -240,7 +254,7 @@ function AuthPage({ initialMode }) {
           aria-pressed={!showImage}
           onKeyDown={onKeyToggle}
         >
-          <div className="login-media-box" ref={mediaRef} style={boxHeight ? { height: boxHeight } : undefined}>
+          <div className="login-media-box" ref={mediaRef} style={mediaStyle}>
             {showImage ? (
               currentImage ? (
                 <img
