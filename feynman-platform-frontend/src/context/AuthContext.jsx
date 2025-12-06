@@ -15,6 +15,7 @@ export function AuthProvider({ children }) {
             return null;
         }
     });
+    const [isAuthReady, setIsAuthReady] = useState(false);
 
     const login = (newToken, userData) => {
         setToken(newToken);
@@ -44,15 +45,27 @@ export function AuthProvider({ children }) {
         }
     };
 
-    // 在组件初始化时验证token
+    // 在组件初始化或 token 变化时验证token，并标记鉴权就绪
     useEffect(() => {
-        if (token) {
-            verifyToken();
-        }
+        let mounted = true;
+        const check = async () => {
+            if (token) {
+                try {
+                    await verifyToken();
+                } finally {
+                    if (mounted) setIsAuthReady(true);
+                }
+            } else {
+                if (mounted) setIsAuthReady(true);
+            }
+        };
+        setIsAuthReady(false);
+        check();
+        return () => { mounted = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token]);
 
-    const value = { token, user, login, logout };
+    const value = { token, user, login, logout, isAuthReady };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
