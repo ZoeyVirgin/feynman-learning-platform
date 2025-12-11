@@ -127,7 +127,7 @@ function BatchQuizPage() {
   };
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{ padding: 16, maxWidth: 960, margin: '0 auto' }}>
       <h1>批量出题</h1>
       <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: 12 }}>返回</button>
 

@@ -107,7 +107,7 @@ function QuizPage() {
   if (!knowledgePoint) return <div style={{ padding: 16 }}>加载知识点信息...</div>;
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{ padding: 16, maxWidth: 960, margin: '0 auto' }}>
       <h1>知识点测评: {knowledgePoint.title}</h1>
       <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: 12 }}>返回</button>
       <div style={{ marginBottom: 12 }}>
