@@ -4,22 +4,34 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 function ProtectedRoute() {
-  const { token } = useAuth();
+  const { token, initializing, silentRefresh } = useAuth();
   const location = useLocation(); // 保存当前路径，用于可能的返回
-  const [redirect, setRedirect] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [needLogin, setNeedLogin] = useState(false);
 
   useEffect(() => {
-    if (!token) {
-      // 弹出提示
-      alert('请先登录后再访问该页面！');
-      // 延时设置跳转（为了避免 alert 阻塞）
-      setRedirect(true);
-    }
-  }, [token]);
+    let cancelled = false;
+    const check = async () => {
+      if (token) return; // 已登录
+      setChecking(true);
+      try {
+        // 没有 token 时，先尝试静默刷新
+        const ok = await silentRefresh();
+        if (!cancelled) setNeedLogin(!ok);
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+    };
+    if (!token && !initializing) check();
+    return () => { cancelled = true; };
+  }, [token, initializing, silentRefresh]);
 
-  if (redirect && !token) {
-    // 跳转到登录页
-    return <Navigate to="/login" replace state={{ from: location }} />;
+  if (initializing || checking) {
+    return <div style={{ padding: 24, color: '#868e96' }}>加载中...</div>;
+  }
+
+  if (!token && needLogin) {
+    return <Navigate to="/login" replace state={{ from: location, message: '登录状态已悄悄过期，请重新登录' }} />;
   }
 
   return <Outlet />;

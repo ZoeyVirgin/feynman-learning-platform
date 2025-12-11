@@ -1,6 +1,7 @@
 const express = require('express');//引入express工具包
 const cors = require('cors');//引入cors允许跨域请求
 const bcrypt = require('bcryptjs');//加密密码
+const cookieParser = require('cookie-parser');
 require('dotenv').config();//读取文件环境配置
 console.log('JWT_SECRET =', process.env.JWT_SECRET);
 
@@ -13,8 +14,12 @@ const app = express();
 const port = process.env.PORT || 4500;
 
 //中间件，允许跨域和解析json数据
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 //数据库连接
 sequelize.authenticate()

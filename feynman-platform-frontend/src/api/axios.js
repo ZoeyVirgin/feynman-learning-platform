@@ -6,7 +6,23 @@ const apiClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true, // 允许跨域发送 cookie（用于 refreshToken）
 });
+
+// --- 刷新队列，避免并发重复刷新 ---
+let isRefreshing = false;
+let refreshPromise = null;
+const pendingQueue = [];
+
+function subscribeTokenRefresh(cb) {
+    pendingQueue.push(cb);
+}
+function onRefreshed(newToken) {
+    while (pendingQueue.length) {
+        const cb = pendingQueue.shift();
+        try { cb(newToken); } catch (_) {}
+    }
+}
 
 // 添加请求拦截器，每次请求都会自动带上token
 apiClient.interceptors.request.use(
@@ -18,6 +34,66 @@ apiClient.interceptors.request.use(
         return config;
     },
     (error) => Promise.reject(error)
+);
+
+// 添加响应拦截器：捕获401后尝试静默刷新再重放原请求
+apiClient.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const { response, config } = error || {};
+        if (!response) return Promise.reject(error);
+
+        const status = response.status;
+        const url = (config && config.url) || '';
+        const isAuthPath = /\/users\/(login|register|refresh)/.test(url);
+
+        if (status === 401 && !config._retry && !isAuthPath) {
+            config._retry = true;
+
+            if (!isRefreshing) {
+                isRefreshing = true;
+                refreshPromise = axios.post(
+                    'http://localhost:4500/api/users/refresh',
+                    {},
+                    { withCredentials: true }
+                )
+                    .then((res) => {
+                        const newToken = res?.data?.token;
+                        const user = res?.data?.user;
+                        if (newToken) {
+                            localStorage.setItem('token', newToken);
+                            window.dispatchEvent(new CustomEvent('auth:token', { detail: { token: newToken, user } }));
+                            onRefreshed(newToken);
+                        }
+                        return newToken;
+                    })
+                    .catch((e) => {
+                        localStorage.removeItem('token');
+                        try { onRefreshed(null); } catch (_) {}
+                        window.dispatchEvent(new CustomEvent('auth:logout', { detail: { reason: 'expired' } }));
+                        throw e;
+                    })
+                    .finally(() => {
+                        isRefreshing = false;
+                        refreshPromise = null;
+                    });
+            }
+
+            // 等待刷新完成再重放
+            return new Promise((resolve, reject) => {
+                subscribeTokenRefresh((newToken) => {
+                    if (!newToken) {
+                        reject(error);
+                        return;
+                    }
+                    config.headers['x-auth-token'] = newToken;
+                    resolve(apiClient(config));
+                });
+            });
+        }
+
+        return Promise.reject(error);
+    }
 );
 
 export default apiClient;

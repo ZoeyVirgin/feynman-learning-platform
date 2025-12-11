@@ -18,6 +18,14 @@ function AuthPage({ initialMode }) {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // 温柔提示（可从路由 state 传入）
+  const [info, setInfo] = useState(() => location.state?.message || '');
+  useEffect(() => {
+    if (!info) return;
+    const t = setTimeout(() => setInfo(''), 4800);
+    return () => clearTimeout(t);
+  }, [info]);
+
   // 左侧卡片：图片/冷知识切换
   const images = useMemo(() => {
     const modules = import.meta.glob('../assets/images/knowledge/**/*.{webp,jpg,jpeg,png}', { eager: true });
@@ -282,6 +290,20 @@ function AuthPage({ initialMode }) {
         {/* 右侧：登录/注册表单 */}
         <section className="login-right">
           <h1 className="login-title">{mode === 'login' ? '欢迎回来' : '新建账号'}</h1>
+
+          {info && (
+            <div style={{
+              background: '#f1f3f5',
+              color: '#495057',
+              border: '1px solid #e9ecef',
+              borderRadius: 8,
+              padding: '10px 12px',
+              margin: '6px 0 10px',
+              fontSize: 13
+            }}>
+              {info}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             {mode === 'register' && (

@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import apiClient from '../api/axios';
 
 const AuthContext = createContext(null);
@@ -15,44 +15,77 @@ export function AuthProvider({ children }) {
             return null;
         }
     });
+    const [initializing, setInitializing] = useState(true);
 
-    const login = (newToken, userData) => {
-        setToken(newToken);
-        setUser(userData);
-        localStorage.setItem('token', newToken);
-        localStorage.setItem('user', JSON.stringify(userData));
-    };
+    const login = useCallback((newToken, userData) => {
+        if (newToken) {
+            setToken(newToken);
+            localStorage.setItem('token', newToken);
+        }
+        if (userData) {
+            setUser(userData);
+            localStorage.setItem('user', JSON.stringify(userData));
+        }
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setToken(null);
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-    };
+    }, []);
 
-    // 添加token验证函数
-    const verifyToken = async () => {
+    // 静默刷新：尝试用 httpOnly 刷新令牌换新 access token
+    const silentRefresh = useCallback(async () => {
+        try {
+            const res = await apiClient.post('/users/refresh', {});
+            const newToken = res?.data?.token;
+            const newUser = res?.data?.user;
+            if (newToken) {
+                login(newToken, newUser);
+                return true;
+            }
+            return false;
+        } catch {
+            return false;
+        }
+    }, [login]);
+
+    // 验证当前 token
+    const verifyToken = useCallback(async () => {
         try {
             const response = await apiClient.get('/users/verify');
             setUser(response.data.user);
             return true;
         } catch (error) {
-            // token无效，清除本地数据
-            console.warn('Token 验证失败:', error?.response?.data?.msg || error.message);
+            // token无效：先尝试静默刷新
+            const refreshed = await silentRefresh();
+            if (refreshed) return true;
             logout();
             return false;
         }
-    };
+    }, [logout, silentRefresh]);
 
-    // 在组件初始化时验证token
+    // 初始化：如果有 token 走校验；如果没有，也尝试刷新（因为 cookie 里可能还在）
     useEffect(() => {
-        if (token) {
-            verifyToken();
-        }
+        (async () => {
+            if (token) await verifyToken();
+            else await silentRefresh();
+            setInitializing(false);
+        })();
+        // 监听全局刷新事件（来自 axios 响应拦截器）
+        const onToken = (e) => login(e.detail?.token, e.detail?.user);
+        const onLogout = () => logout();
+        window.addEventListener('auth:token', onToken);
+        window.addEventListener('auth:logout', onLogout);
+        return () => {
+            window.removeEventListener('auth:token', onToken);
+            window.removeEventListener('auth:logout', onLogout);
+        };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token]);
+    }, []);
 
-    const value = { token, user, login, logout };
+    const value = { token, user, login, logout, verifyToken, silentRefresh, initializing };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

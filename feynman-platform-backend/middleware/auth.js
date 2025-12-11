@@ -11,12 +11,10 @@ module.exports = async function (req, res, next) {
         }
         // 没有token
         if (!token) {
-            return res.status(401).json({ msg: '没有令牌,授权被拒绝' });
+            return res.status(401).json({ msg: '缺少访问令牌' });
         }
         // 验证token
-        // console.log('token received =', token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log('decoded payload =', decoded);
         const userId = decoded && decoded.user && decoded.user.id;
         if (!userId) {
             return res.status(401).json({ msg: '令牌无效' });
@@ -34,6 +32,9 @@ module.exports = async function (req, res, next) {
         next();
     } catch (err) {
         console.error('auth middleware error:', err.message);
+        if (err && err.name === 'TokenExpiredError') {
+            return res.status(401).json({ msg: 'Token已过期' });
+        }
         return res.status(401).json({ msg: '令牌无效' });
     }
 }

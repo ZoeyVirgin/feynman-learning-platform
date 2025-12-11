@@ -6,7 +6,15 @@ function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // 通知后端清除 httpOnly 刷新cookie
+      await fetch('http://localhost:4500/api/users/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (_) {}
     logout();        // 清除token和用户信息
     navigate('/login'); // 跳回登录页
   };
