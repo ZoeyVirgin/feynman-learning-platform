@@ -7,6 +7,7 @@ import KnowledgePointFormPage from './pages/KnowledgePointFormPage';
 import FeynmanRecordPage from './pages/FeynmanRecordPage';
 import QuizPage from './pages/QuizPage';
 import BatchQuizPage from './pages/BatchQuizPage';
+import AgentPage from './pages/AgentPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/feynman/:id" element={<FeynmanRecordPage />} />
           <Route path="/quiz/:id" element={<QuizPage />} />
           <Route path="/quiz/batch" element={<BatchQuizPage />} />
+          <Route path="/agent" element={<AgentPage />} />
           {/* 将来其他受保护页面可以放在这里 */}
         </Route>
       </Route>

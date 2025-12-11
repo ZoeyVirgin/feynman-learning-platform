@@ -27,6 +27,11 @@ function Layout() {
         <nav className="top-nav">
           <div className="nav-left">
             <Link to="/" className="nav-link">主页</Link>
+            {token && (
+              <>
+                <Link to="/agent" className="nav-link">AI助手</Link>
+              </>
+            )}
             {token && user && (
               <span className="nav-username">欢迎，{user.username}！</span>
             )}

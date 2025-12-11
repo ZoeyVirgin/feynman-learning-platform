@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const KnowledgePoint = require('../models/KnowledgePoint');
+const { addKnowledgePointToStore } = require('../services/vectorStoreService');
 
 // POST /api/knowledge-points - 创建
 router.post('/', auth, async (req, res) => {
@@ -12,6 +13,8 @@ router.post('/', auth, async (req, res) => {
             content,
             userId: req.user.id
         });
+        // 异步加入向量库（不阻塞主请求）
+        try { addKnowledgePointToStore(kp); } catch (_) {}
         res.json(kp);
     } catch (err) {
         console.error(err);
@@ -60,7 +63,13 @@ router.put('/:id', auth, async (req, res) => {
         if (typeof status !== 'undefined') updateData.status = status;
         if (typeof reviewList !== 'undefined') updateData.reviewList = reviewList;
 
+        const prevContent = kp.content;
         await kp.update(updateData);
+        try {
+            if (Object.prototype.hasOwnProperty.call(updateData, 'content') && updateData.content !== prevContent) {
+                require('../services/vectorStoreService').addKnowledgePointToStore(kp);
+            }
+        } catch (_) {}
         res.json(kp);
     } catch (err) {
         console.error(err);
