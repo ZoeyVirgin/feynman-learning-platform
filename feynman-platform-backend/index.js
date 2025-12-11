@@ -26,7 +26,9 @@ sequelize.authenticate()
     .then(() => {
         console.log('数据库连接成功');
         // 同步数据库表（开发环境）
-        return sequelize.sync({ alter: true });
+        // return sequelize.sync({ alter: true });
+        return sequelize.sync();
+
     })
     .then(() => {
         console.log('数据库表已同步');
