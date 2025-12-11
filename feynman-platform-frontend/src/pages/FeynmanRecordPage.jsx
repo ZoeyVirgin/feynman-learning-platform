@@ -99,22 +99,20 @@ function FeynmanRecordPage() {
         <div className="feynman-record-page">
             <h1>复述知识点: {kpTitle}</h1>
 
-            {/* 返回按钮 */}
-            <button onClick={() => navigate(-1)} className="back-btn">
-                返回
-            </button>
-
-            <hr />
-
-            {/* 按钮区域 */}
-            <div className="action-buttons">
+            {/* 按钮区域（统一把返回按钮放到主要操作旁边） */}
+            <div className="action-buttons" style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8 }}>
                 <button onClick={recStart} disabled={recStatus === 'recording'} className="record-btn">
                     开始录音
                 </button>
                 <button onClick={recStop} disabled={recStatus !== 'recording'} className="record-btn">
                     停止录音
                 </button>
+                <button onClick={() => navigate(-1)} className="back-btn">
+                    返回
+                </button>
             </div>
+
+            <hr />
 
             {/* 录音状态 */}
             <p className="rec-status">录音状态: {recStatus}</p>

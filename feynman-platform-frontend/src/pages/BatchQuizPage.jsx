@@ -129,7 +129,6 @@ function BatchQuizPage() {
   return (
     <div style={{ padding: 16, maxWidth: 960, margin: '0 auto' }}>
       <h1>批量出题</h1>
-      <button onClick={() => navigate(-1)} className="back-btn" style={{ marginBottom: 12 }}>返回</button>
 
       <div style={{ marginBottom: 12 }}>
         <strong>已选知识点（{kps.length}）:</strong>
@@ -154,6 +153,9 @@ function BatchQuizPage() {
         <button onClick={() => fetchQuestion('困难', 'single-choice')} className="btn-hard" disabled={isLoading} style={{ marginRight: 8 }}>单选·困难</button>
         <span style={{ margin: '0 12px' }}>|</span>
         <button onClick={() => fetchQuestion('中等', 'short-answer')} className="btn-short" disabled={isLoading} style={{ marginRight: 8 }}>简答·中等</button>
+        {!result && (
+          <button onClick={() => navigate(-1)} className="back-btn">返回</button>
+        )}
       </div>
 
       {isLoading && <p>AI 正在出题/阅卷中...</p>}

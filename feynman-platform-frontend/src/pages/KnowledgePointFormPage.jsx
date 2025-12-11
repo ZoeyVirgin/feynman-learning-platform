@@ -47,9 +47,8 @@ function KnowledgePointFormPage() {
         <div style={{ width: '100%' }}>
             {/* 居中容器，保持与原表单同样的居中效果与宽度 */}
             <div style={{ maxWidth: 400, width: '100%', margin: '0 auto' }}>
-                {/* 顶部仅保留一个返回按钮 */}
+                {/* 标题，仅展示，不再放返回按钮 */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                    <button className="back-btn" onClick={() => navigate(-1)}>返回</button>
                     <h1 style={{ margin: 0 }}>{isEditing ? '编辑知识点' : '新建知识点'}</h1>
                 </div>
 
@@ -75,9 +74,12 @@ function KnowledgePointFormPage() {
                             />
                         </div>
                     </div>
-                    <button type="submit" style={{ marginTop: '1rem' }}>
-                        {isEditing ? '更新' : '创建'}
-                    </button>
+                    <div style={{ display: 'flex', gap: 8, marginTop: '1rem', alignItems: 'center' }}>
+                        <button type="submit">
+                            {isEditing ? '更新' : '创建'}
+                        </button>
+                        <button type="button" className="back-btn" onClick={() => navigate(-1)}>返回</button>
+                    </div>
                 </form>
             </div>
         </div>
