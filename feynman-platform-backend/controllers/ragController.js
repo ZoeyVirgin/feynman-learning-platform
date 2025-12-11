@@ -109,29 +109,9 @@ exports.rebuildVectorStore = async (req, res) => {
     if (env !== 'development') {
       return res.status(403).json({ msg: '仅开发环境允许重建' });
     }
-
-    const dir = VECTOR_STORE_PATH;
-    if (fs.existsSync(dir)) {
-      // 清空目录
-      for (const f of fs.readdirSync(dir)) {
-        try { fs.unlinkSync(path.join(dir, f)); } catch (_) {}
-      }
-    } else {
-      try { fs.mkdirSync(dir, { recursive: true }); } catch (_) {}
-    }
-
-    const KnowledgePoint = require('../models/KnowledgePoint');
-    const { addKnowledgePointToStore } = require('../services/vectorStoreService');
-    const kps = await KnowledgePoint.findAll({ attributes: ['id', 'content'] });
-    let count = 0;
-    for (const kp of kps) {
-      if (kp.content && String(kp.content).trim()) {
-        await addKnowledgePointToStore(kp);
-        count += 1;
-      }
-    }
-
-    return res.json({ ok: true, rebuilt: count, dir });
+    const { rebuildAllVectors } = require('../services/vectorStoreService');
+    const result = await rebuildAllVectors();
+    return res.json({ ok: true, ...result });
   } catch (e) {
     return res.status(500).json({ msg: '重建失败', error: e?.message || String(e) });
   }

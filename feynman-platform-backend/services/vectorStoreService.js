@@ -56,7 +56,7 @@ class QianfanV2Embeddings {
 
 async function ensureDeps() {
   if (!cached.HNSWLib) cached.HNSWLib = (await import('@langchain/community/vectorstores/hnswlib')).HNSWLib;
-  if (!cached.MemoryVectorStore) cached.MemoryVectorStore = (await import('@langchain/community/vectorstores/memory')).MemoryVectorStore;
+  // MemoryVectorStore 延迟在 ensureMemoryStore 中按需导入，避免不同版本子路径不兼容
   if (!cached.BaiduQianfanEmbeddings) cached.BaiduQianfanEmbeddings = (await import('@langchain/baidu-qianfan')).BaiduQianfanEmbeddings;
   if (!cached.RecursiveCharacterTextSplitter) cached.RecursiveCharacterTextSplitter = (await import('@langchain/textsplitters')).RecursiveCharacterTextSplitter;
 
@@ -93,7 +93,9 @@ async function ensureDeps() {
 
   // 兜底开关（在 HNSW 不可用时主动使用内存向量库）
   const fallbackEnv = String(process.env.RAG_FALLBACK_MEMORY || '').toLowerCase();
-  cached.useMemory = fallbackEnv === '1' || fallbackEnv === 'true' || fallbackEnv === 'yes';
+  // 强制禁用内存回退，避免因不同版本的 langchain 子路径导致导入失败
+  cached.useMemory = false;
+  // 如需显式启用内存回退，请将上一行改为根据 fallbackEnv 判断
 
   return cached;
 }
@@ -109,12 +111,7 @@ function getId(obj) {
 }
 
 async function ensureMemoryStore() {
-  const { MemoryVectorStore, embeddings } = await ensureDeps();
-  if (!cached.memoryStore) {
-    // 创建一个空的内存向量库
-    cached.memoryStore = await MemoryVectorStore.fromTexts([], [], embeddings);
-  }
-  return cached.memoryStore;
+  throw new Error('MemoryVectorStore 已禁用（为避免子路径导出不兼容导致启动失败）。请使用 HNSWLib 或显式在代码中启用内存回退后再试。');
 }
 
 // 向量入库（新增或更新时调用，采用“追加”策略）
@@ -127,7 +124,7 @@ async function addKnowledgePointToStore(knowledgePoint) {
     const content = String(knowledgePoint?.content || '').trim();
     if (!content) {
       console.warn('[RAG] 知识点内容为空，跳过索引');
-      return;
+      return false;
     }
 
     const docs = await textSplitter.createDocuments([content], [{ knowledgePointId: kpId }]);
@@ -138,7 +135,7 @@ async function addKnowledgePointToStore(knowledgePoint) {
       const mem = await ensureMemoryStore();
       await mem.addDocuments(docs);
       console.log('[RAG] 已向内存向量库追加文档');
-      return;
+      return true;
     }
 
     ensureVectorDir();
@@ -155,8 +152,10 @@ async function addKnowledgePointToStore(knowledgePoint) {
 
     await vectorStore.save(VECTOR_STORE_PATH);
     console.log(`[RAG] 向量库已保存 -> ${VECTOR_STORE_PATH}`);
+    return true;
   } catch (err) {
     console.error('[RAG] 添加到向量库失败:', err?.response?.data || err.message);
+    return false;
   }
 }
 
@@ -170,8 +169,19 @@ async function getRetriever(k = 4) {
   }
 
   // 正常：从磁盘加载 HNSW 库
-  const store = await HNSWLib.load(VECTOR_STORE_PATH, embeddings);
-  return store.asRetriever(k);
+  try {
+    const store = await HNSWLib.load(VECTOR_STORE_PATH, embeddings);
+    return store.asRetriever(k);
+  } catch (e) {
+    // HNSW 加载失败：按策略走内存库
+    const autoFallback = String(process.env.RAG_AUTO_FALLBACK || 'false').toLowerCase();
+    const allowAuto = autoFallback === 'true' || autoFallback === '1' || autoFallback === 'yes';
+    if (cached.useMemory || allowAuto) {
+      const mem = await ensureMemoryStore();
+      return mem.asRetriever(k);
+    }
+    throw e;
+  }
 }
 
 async function queryVectorStore(query, k = 4) {
@@ -198,4 +208,38 @@ async function queryVectorStore(query, k = 4) {
   }
 }
 
-module.exports = { VECTOR_STORE_PATH, addKnowledgePointToStore, getRetriever, queryVectorStore };
+async function clearVectorStoreDir() {
+  try {
+    const dir = VECTOR_STORE_PATH;
+    // 重置内存库（如果启用）
+    if (cached.memoryStore) {
+      try { cached.memoryStore = null; } catch (_) {}
+    }
+    if (fs.existsSync(dir)) {
+      for (const f of fs.readdirSync(dir)) {
+        try { fs.unlinkSync(path.join(dir, f)); } catch (_) {}
+      }
+    } else {
+      try { fs.mkdirSync(dir, { recursive: true }); } catch (_) {}
+    }
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function rebuildAllVectors() {
+  const KnowledgePoint = require('../models/KnowledgePoint');
+  await clearVectorStoreDir();
+  const kps = await KnowledgePoint.findAll({ attributes: ['id', 'content'] });
+  let count = 0;
+  for (const kp of kps) {
+    if (kp.content && String(kp.content).trim()) {
+      await addKnowledgePointToStore(kp);
+      count += 1;
+    }
+  }
+  return { rebuilt: count, dir: VECTOR_STORE_PATH };
+}
+
+module.exports = { VECTOR_STORE_PATH, addKnowledgePointToStore, getRetriever, queryVectorStore, clearVectorStoreDir, rebuildAllVectors };

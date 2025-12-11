@@ -8,11 +8,71 @@ function AgentPage() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // 向量库状态
+  const [vsStatus, setVsStatus] = useState(null);
+  const [vsLoading, setVsLoading] = useState(false);
+  const [vsRebuilding, setVsRebuilding] = useState(false);
+
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const fetchVectorStoreStatus = async () => {
+    setVsLoading(true);
+    try {
+      // 优先请求鉴权接口
+      const res = await apiClient.get('/ai/vector-store/status');
+      setVsStatus(res.data);
+    } catch (err) {
+      // 开发环境可回退到 dev 调试口
+      try {
+        const raw = await fetch('http://localhost:4500/api/ai/vector-store/status', { credentials: 'include' });
+        const data = await raw.json();
+        setVsStatus(data);
+      } catch (e2) {
+        setVsStatus({ error: err?.response?.data || err?.message || 'unknown error' });
+      }
+    } finally {
+      setVsLoading(false);
+    }
+  };
+
+  const rebuildVectorStore = async () => {
+    if (vsRebuilding) return;
+    setVsRebuilding(true);
+    try {
+      // 尝试鉴权接口
+      const res = await apiClient.post('/ai/vector-store/rebuild', {});
+      // 重建完成后刷新状态
+      await fetchVectorStoreStatus();
+      // 提示消息气泡
+      setMessages((prev) => [
+        ...prev,
+        { sender: 'bot', text: `知识库已重建：共处理 ${res?.data?.rebuilt ?? 0} 条。` },
+      ]);
+    } catch (err) {
+      // 开发环境回退到 dev 路由
+      try {
+        const raw = await fetch('http://localhost:4500/api/ai/vector-store/rebuild-dev');
+        const data = await raw.json();
+        await fetchVectorStoreStatus();
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'bot', text: `知识库已重建：共处理 ${data?.rebuilt ?? 0} 条。` },
+        ]);
+      } catch (e2) {
+        setMessages((prev) => [
+          ...prev,
+          { sender: 'bot', text: `重建失败：${err?.response?.data?.msg || err?.message || 'unknown error'}` },
+        ]);
+      }
+    } finally {
+      setVsRebuilding(false);
+    }
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -41,6 +101,24 @@ function AgentPage() {
 
   return (
     <div className="agent-page">
+      {/* 工具栏 */}
+      <div className="agent-tools">
+        <button className="tool-btn" onClick={fetchVectorStoreStatus} disabled={vsLoading}>
+          {vsLoading ? '检查中…' : '检查状态'}
+        </button>
+        <button className="tool-btn" onClick={rebuildVectorStore} disabled={vsRebuilding}>
+          {vsRebuilding ? '重建中…' : '刷新知识库'}
+        </button>
+        {vsStatus && (
+          <div className="status-line">
+            <span>目录: {vsStatus.dir || '-'}</span>
+            <span> | 可用: {String(vsStatus.retrieverReady || false)}</span>
+            {Array.isArray(vsStatus.files) && <span> | 文件数: {vsStatus.files.length}</span>}
+            {vsStatus.error && <span className="warn"> | 错误: {String(vsStatus.error)}</span>}
+          </div>
+        )}
+      </div>
+
       <div className="chat-window">
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.sender}`}>
@@ -88,4 +166,3 @@ function AgentPage() {
 }
 
 export default AgentPage;
-

@@ -39,7 +39,9 @@ if ((process.env.NODE_ENV || 'development') === 'development') {
       return res.status(500).json({ msg: '调试路由失败', error: e?.message });
     }
   });
+  router.get('/vector-store/rebuild-dev', async (req, res) => rebuildVectorStore(req, res));
   console.log('[routes/ai] DEV 无鉴权调试路由 /rag-qa-dev 已挂载');
+  console.log('[routes/ai] DEV 无鉴权重建路由 /vector-store/rebuild-dev 已挂载');
 }
 
 // 运维：向量库状态 & 重建（需要鉴权）
